@@ -285,8 +285,8 @@
         </div>
     </footer>
 
- <script>
-    const listEl = document.getElementById('list');
+<script>
+  const listEl = document.getElementById('list');
   const searchInput = document.getElementById('searchInput');
   let fatawaData = []; // will hold API fatawa
 
@@ -319,7 +319,7 @@
           <div class="flex-shrink-0 w-14 h-14 bg-[${i%2? '#124559':'#598392'}] text-white rounded-xl flex items-center justify-center font-bold text-2xl ml-4">${i+1}</div>
           <div class="flex-grow text-right">
             <h3 class="text-xl font-semibold mb-2">${f.Title || f.question || "بلا عنوان"}</h3>
-             <p class="text-gray-700 line-clamp-3">${f.detailquestion || f.details || ""}</p>
+            <p class="text-gray-700 line-clamp-1">${f.detailquestion || f.details || ""}</p>
             <div class="mt-4 flex justify-between items-center">
               <span class="text-mid text-green-700 font-bold">مکمل جواب پڑھیں ←</span>
               <div class="flex items-center text-gray-500 space-x-3 space-x-reverse">
@@ -346,7 +346,8 @@
 
   // Initial load
   fetchFatawa();
- </script>
+</script>
+
 
 </body>
 </html>
