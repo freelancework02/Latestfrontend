@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,shrink-to-fit=no"/>
+  <title>تمام فتاویٰ — مسائل ورلڈ</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        @font-face {
+            font-family: 'NaatFont';
+            src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body {
+            font-family: 'NaatFont', serif;
+            font-size: 80%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-bottom: 70px; /* Space for the bottom navigation bar */
+            padding-top: 56px; /* Space for the new mobile header */
+        }
+        @media (min-width: 768px) {
+            body {
+                padding-top: 0; /* Remove top padding on desktop */
+            }
+        }
+        .hero-section {
+            background-image: linear-gradient(rgba(1, 22, 30, 0.7), rgba(1, 22, 30, 0.7)), url('https://img.freepik.com/free-photo/close-up-islamic-new-year-concept-with-misbaha_23-2148611691.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        /* Custom scrollbar for dropdown and sidebar */
+        #searchDropdown::-webkit-scrollbar,
+        #related-fatawa-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        #searchDropdown::-webkit-scrollbar-thumb,
+        #related-fatawa-list::-webkit-scrollbar-thumb {
+            background-color: #598392;
+            border-radius: 4px;
+        }
+        #searchDropdown::-webkit-scrollbar-track,
+        #related-fatawa-list::-webkit-scrollbar-track {
+            background: #eff6e0;
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeInDown { animation: fadeInDown 0.5s ease-out forwards; }
+        
+        .ticker-container {
+            height: auto;
+            overflow: hidden;
+            box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .ticker-content {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+        .ticker-item {
+            flex-shrink: 0;
+            display: none; /* Hide all items by default */
+            margin-left: 2rem;
+            animation: none; /* Disable default animation */
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem;
+        }
+        .ticker-item.active {
+            display: block; /* Show the active item */
+        }
+        @keyframes ticker-fade-in {
+            from { opacity: 0; transform: translateY(100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .ticker-item.fade-in {
+            animation: ticker-fade-in 1s ease-out;
+        }
+        .ticker-item-hidden {
+            display: none;
+        }
+         /* Hero Section Slider Styles */
+         .hero-slider-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+        }
+        .hero-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .hero-section > .container {
+            position: relative;
+            z-index: 1;
+        }
+        /* Ticker content styling */
+        #ticker-content span {
+            display: block;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #ticker-content span.active {
+            opacity: 1;
+        }
+        /* New Styles for the horizontal ticker */
+        .horizontal-ticker {
+            display: flex;
+            align-items: center;
+            height: 40px;
+            overflow: hidden;
+            position: relative;
+            white-space: nowrap;
+        }
+        .horizontal-ticker-item {
+            animation: move-left 30s linear infinite;
+            font-size: 1.1rem;
+            padding-left: 20px;
+        }
+        @keyframes move-left {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .circular-logo {
+            border-radius: 50%;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rich_black': { DEFAULT: '#01161e', 100: '#000406', 200: '#00090c', 300: '#010d12', 400: '#011118', 500: '#01161e', 600: '#04597b', 700: '#079cd8', 800: '#45c6f9', 900: '#a2e3fc' },
+                        'midnight_green': { DEFAULT: '#124559', 100: '#040e12', 200: '#071c24', 300: '#0b2935', 400: '#0f3747', 500: '#124559', 600: '#20799c', 700: '#36a9d6', 800: '#79c5e4', 900: '#bce2f1' },
+                        'air_force_blue': { DEFAULT: '#598392', 100: '#121a1d', 200: '#24343a', 300: '#354e57', 400: '#476874', 500: '#598392', 600: '#769dab', 700: '#99b6c0', 800: '#bbced5', 900: '#dde7ea' },
+                        'ash_gray': { DEFAULT: '#aec3b0', 100: '#1f2a20', 200: '#3e5441', 300: '#5e7f61', 400: '#83a386', 500: '#aec3b0', 600: '#bdcebf', 700: '#cedbcf', 800: '#dee7df', 900: '#eff3ef' },
+                        'beige': { DEFAULT: '#eff6e0', 100: '#384915', 200: '#71912a', 300: '#a4cc4e', 400: '#c9e197', 500: '#eff6e0', 600: '#f2f8e6', 700: '#f5f9ec', 800: '#f8fbf2', 900: '#fcfdf9' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+
+  <!-- Header -->
+   <!-- Mobile-only Social Media and Ask Link (New) -->
+    <div class="fixed top-0 left-0 right-0 md:hidden bg-rich_black text-white flex justify-between items-center py-2 px-4 z-50">
+        <a href="#ask" class="nav-link text-sm text-beige hover:text-ash_gray transition">سوال پوچھیں</a>
+        <div class="flex items-center space-x-4 space-x-reverse">
+            <a href="#" class="hover:text-beige transition text-base"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="hover:text-beige transition text-base"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="hover:text-beige transition text-base"><i class="bi bi-youtube"></i></a>
+        </div>
+    </div>
+    
+
+    <!-- Header & Navigation for desktop view -->
+    <header id="qs-header" class="bg-beige/90 backdrop-blur-md shadow-lg sticky top-0 z-50 rounded-b-xl hidden md:block">
+        <!-- Social Media Links -->
+        <div class="bg-rich_black text-air_force_blue-700 py-2">
+            <div class="container mx-auto px-4 sm:px-6 flex justify-between items-center space-x-reverse text-lg">
+                <a href="#ask" class="nav-link text-beige hover:text-ash_gray transition">سوال پوچھیں</a>
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="#" class="hover:text-beige transition"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="hover:text-beige transition"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="hover:text-beige transition"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <!-- Main Nav -->
+        <nav class="container mx-auto px-4 sm:px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-3xl font-bold text-midnight_green">
+                    <a href="#home" class="nav-link flex items-center space-x-reverse space-x-2">
+                        <img src="https://alqalamarts.com/mw/masailworld.png" alt="Masail World Logo" class="h-10 w-10 circular-logo">
+                        <span class="text-3xl font-bold text-midnight_green">مسائل ورلڈ</span>
+                        <span class="text-xl font-normal block">دار الافتاء اہل سنت</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-reverse space-x-8">
+                    <a href="#home" class="nav-link text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">صفحہ اول</a>
+                    <a href="#fatawa" class="nav-link text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">فتاویٰ</a>
+                    <a href="#about" class="nav-link text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">تعارف</a>
+                    <a href="#articles" class="nav-link text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">مضامین</a>
+                    <a href="#categories" class="nav-link text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">موضوعات</a>
+                    <a href="#books" class="nav-link text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">اسلامی کتب</a>
+                    <a href="#ask" class="nav-link text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">سوال پوچھیں</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+  <main class="container mx-auto px-4 pt-24 pb-12 max-w-5xl">
+
+    <h1 class="text-4xl font-bold text-center mb-8" style="color:var(--mid)">تمام فتاویٰ</h1>
+
+    <div class="max-w-2xl mx-auto mb-8">
+      <div class="relative">
+        <input id="searchInput" type="text" placeholder="فتویٰ یا مضمون تلاش کریں..." class="w-full p-4 pr-12 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-opacity-50" />
+        <span class="absolute top-1/2 -translate-y-1/2 left-4 text-gray-500"><i class="bi bi-search"></i></span>
+      </div>
+    </div>
+
+    <div id="list" class="space-y-6">
+      <!-- JS will inject cards here -->
+    </div>
+
+    <div class="text-center mt-8">
+      <a href="index.html" class="inline-block bg-mid text-white py-3 px-6 rounded-full" style="background:var(--mid)">واپس صفحہ اول</a>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer id="qs-footer" class="bg-rich_black text-beige pt-16 rounded-t-2xl">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="text-3xl font-bold mb-4">مسائل ورلڈ</h3>
+                    <p class="text-air_force_blue-700 text-lg leading-relaxed">ایک آن لائن پلیٹ فارم جو قرآن و سنت کی روشنی میں آپ کے مسائل کا حل پیش کرتا ہے۔ ہمارا مقصد مستند علمی تحقیق اور اہلسنت والجماعت کے مطابق رہنمائی کو عام کرنا ہے۔</p>
+                    <div class="flex space-x-5 space-x-reverse text-3xl mt-6">
+                        <a href="#" class="text-air_force_blue-700 hover:text-beige transition"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="hover:text-beige transition"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="text-air_force_blue-700 hover:text-beige transition"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">فوری لنکس</h3>
+                    <ul class="space-y-3 text-lg">
+                        <li><a href="#fatawa" class="nav-link text-air_force_blue-700 hover:text-beige transition">فتاویٰ</a></li>
+                        <li><a href="#articles" class="nav-link text-air_force_blue-700 hover:text-beige transition">مضامین</a></li>
+                        <li><a href="#ask" class="nav-link text-air_force_blue-700 hover:text-beige transition">سوال پوچھیں</a></li>
+                        <li><a href="#about" class="nav-link text-air_force-blue-700 hover:text-beige transition">ہمارے بارے میں</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">ہم سے رابطہ کریں</h3>
+                    <ul class="space-y-3 text-lg text-air_force_blue-700">
+                        <li><i class="bi bi-envelope ml-2"></i>info@masailworld.com</li>
+                        <li><i class="bi bi-telephone ml-2"></i>+92 300 1234567</li>
+                        <li><i class="bi bi-geo-alt ml-2"></i>Barelly Sharif, India</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">ہمارے بارے میں</h3>
+                    <p class="text-air_force_blue-700 text-lg leading-relaxed">مسائل ورلڈ ایک آن لائن پلیٹ فارم ہے جو اہل سنت والجماعت کے مطابق شرعی رہنمائی فراہم کرتا ہے۔</p>
+                    <a href="https://alqalamarts.com/" target="_blank" class="text-air_force_blue-700 hover:text-beige transition block mt-2 text-sm font-sans">
+                        <button id="install-app-button" class="bg-air_force_blue-600 text-white font-bold py-2 px-6 rounded-full hover:bg-air_force_blue-400 transition text-sm sm:text-md shadow-md mt-4">
+                        <i class="bi bi-plus-circle ml-2"></i> ایپ انسٹال کریں
+                    </button>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-midnight_green-400 pt-8 pb-8 text-center text-air_force_blue">
+                <p class="text-lg">© 2025 AlQalamArts.com. All rights reserved. | © 2025 مسائل ورلڈ۔ تمام حقوق محفوظ ہیں۔</p>
+            </div>
+        </div>
+    </footer>
+
+  <script>
+    // Same fatawa data used across pages
+    const FATAWA_DATA = [
+      { id: 'fatwa-1', question: 'کیا نبی کریم ﷺ اپنی قبر انور میں حیات ہیں اور سلام سنتے ہیں؟', views: '3.1k', details: 'الجواب: اہلسنت والجماعت کا یہ متفقہ عقیدہ ہے کہ انبیاء کرام علیہم السلام اپنی قبروں میں حیات ہیں اور ان پر پیش کیا جانے والا درود و سلام خود سنتے اور جواب دیتے ہیں۔' },
+      { id: 'fatwa-2', question: 'گیارہویں شریف کی نیاز اور ایصالِ ثواب کا کیا حکم ہے؟', views: '2.8k', details: 'الجواب: حضور غوثِ اعظم رحمۃ اللہ علیہ کے نام سے ایصالِ ثواب کرنا، کھانا کھلانا اور فاتحہ دلانا ایک مستحسن عمل ہے۔' },
+      { id: 'fatwa-3', question: 'مزاراتِ اولیاء پر چادر چڑھانا اور چراغاں کرنا کیسا ہے؟', views: '4.2k', details: 'الجواب: ولی کی قبر پر تعظیم کی نیت سے چادر چڑھانا جائز ہے تاکہ عوام الناس صاحبِ مزار کی عزت و تکریم کریں۔' },
+      { id: 'fatwa-4', question: 'کیا اولیاء اللہ وفات کے بعد مدد کر سکتے ہیں؟', views: '3.5k', details: 'اہلسنت کا عقیدہ ہے کہ اولیاء اللہ اپنی قبور سے بھی فیض جاری رکھتے ہیں اور ان سے استعانت جائز ہے۔' },
+      { id: 'fatwa-5', question: 'علمِ غیبِ مصطفیٰ ﷺ کا کیا مطلب ہے؟', views: '5.1k', details: 'اللہ تعالیٰ نے اپنے حبیب ﷺ کو بے شمار علومِ غیبیہ عطا فرمائے ہیں، جو آپ کی شان اور معجزہ ہے۔' }
+    ];
+
+    const listEl = document.getElementById('list');
+    const searchInput = document.getElementById('searchInput');
+
+    function renderList(data) {
+      listEl.innerHTML = '';
+      if (!data.length) {
+        listEl.innerHTML = '<p class="text-center text-gray-600">کوئی فتاویٰ دستیاب نہیں۔</p>';
+        return;
+      }
+      data.forEach((f, i) => {
+        const a = document.createElement('a');
+        a.href = `fatwa-detail.html?id=${encodeURIComponent(f.id)}`;
+        a.className = 'block bg-white p-6 rounded-2xl shadow-lg border border-gray-200 transition-all duration-200 card-link';
+        a.innerHTML = `
+          <div class="flex items-start">
+            <div class="flex-shrink-0 w-14 h-14 bg-[${i%2? '#124559':'#598392'}] text-white rounded-xl flex items-center justify-center font-bold text-2xl ml-4">${i+1}</div>
+            <div class="flex-grow text-right">
+              <h3 class="text-xl font-semibold mb-2">${f.question}</h3>
+              <p class="text-gray-700 line-clamp-3">${f.details}</p>
+              <div class="mt-4 flex justify-between items-center">
+                <span class="text-mid text-green-700 font-bold">مکمل جواب پڑھیں ←</span>
+                <div class="flex items-center text-gray-500 space-x-3 space-x-reverse">
+                  <span class="flex items-center"><i class="bi bi-eye-fill ml-1"></i> ${f.views}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        listEl.appendChild(a);
+      });
+    }
+
+    // initial render
+    renderList(FATAWA_DATA);
+
+    // search
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim();
+      if (!q) { renderList(FATAWA_DATA); return; }
+      const filtered = FATAWA_DATA.filter(f => f.question.includes(q) || f.details.includes(q));
+      renderList(filtered);
+    });
+  </script>
+
+</body>
+</html>
