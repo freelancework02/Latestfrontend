@@ -293,7 +293,7 @@
   // Fetch latest 50 fatawa from backend
   async function fetchFatawa() {
     try {
-      const res = await fetch("http://localhost:5000/api/fatwa?limit=50&offset=0"); 
+      const res = await fetch("https://masailworld.onrender.com/api/fatwa?limit=50&offset=0"); 
       // ⚠️ Change localhost:5000 to your domain (e.g., https://masailworld.com/api/fatwa)
       fatawaData = await res.json();
       renderList(fatawaData);

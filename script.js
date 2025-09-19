@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      const res = await fetch("http://localhost:5000/api/fatwa/website", {
+      const res = await fetch("https://masailworld.onrender.com/api/fatwa/website", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,14 +87,132 @@ document.addEventListener("DOMContentLoaded", () => {
 //   }
 // });
 
+//Latest fatawa
+
+async function loadLatestFatawa() {
+    try {
+        const response = await fetch("https://masailworld.onrender.com/api/fatwa/latest");
+        const fatawa = await response.json();
+
+        // صرف 3 فتاویٰ لیں
+        const latestFatawa = fatawa.slice(0, 3);
+
+        const fatawaList = document.getElementById("latest-fatawa-list");
+        fatawaList.innerHTML = "";
+
+        latestFatawa.forEach(fatwa => {
+            const fatwaItem = document.createElement("div");
+            fatwaItem.className = "bg-white p-6 rounded-2xl shadow-lg border border-ash_gray hover:shadow-xl transition transform hover:-translate-y-1";
+            fatwaItem.innerHTML = `
+                <h3 class="text-xl md:text-2xl font-bold text-midnight_green mb-3">${fatwa.title}</h3>
+                <p class="text-rich_black-600 text-base md:text-lg mb-4 leading-relaxed line-clamp-3">${fatwa.summary || ""}</p>
+                <a href="#fatwa-detail" class="nav-link text-midnight_green-600 hover:text-midnight_green font-bold text-lg hover:underline transition">مکمل جواب پڑھیں &larr;</a>
+            `;
+            fatawaList.appendChild(fatwaItem);
+        });
+    } catch (error) {
+        console.error("Error fetching latest fatawa:", error);
+        document.getElementById("latest-fatawa-list").innerHTML =
+            `<p class="text-center text-air_force_blue">فی الحال کوئی فتاویٰ دستیاب نہیں ہیں۔</p>`;
+    }
+}
+
+// صفحہ لوڈ ہوتے ہی چلائیں
+document.addEventListener("DOMContentLoaded", loadLatestFatawa);
 
 
 
 
 
+//category fatawa
+
+async function loadFatawa() {
+    try {
+        const response = await fetch("https://masailworld.onrender.com/api/fatwa/latest");
+        const fatawa = await response.json();
+        console.log("the loadfatawa", fatawa);
+
+        // ✅ تازہ ترین فتاویٰ (Home Page)
+        const latestFatawaList = document.getElementById("latest-fatawa-list");
+        if (latestFatawaList) {
+            latestFatawaList.innerHTML = "";
+            fatawa.slice(0, 3).forEach(fatwa => {
+                const item = document.createElement("div");
+                item.className =
+                    "bg-white p-6 rounded-2xl shadow-lg border border-ash_gray hover:shadow-xl transition transform hover:-translate-y-1";
+                item.innerHTML = `
+                    <h3 class="text-xl md:text-2xl font-bold text-midnight_green mb-3">${fatwa.Title}</h3>
+                    <p class="text-rich_black-600 text-base md:text-lg mb-4 leading-relaxed line-clamp-3">
+                        ${fatwa.detailquestion ? fatwa.detailquestion.substring(0, 150) + "..." : ""}
+                    </p>
+                    <a href="#fatwa-detail" 
+                       class="nav-link text-midnight_green-600 hover:text-midnight_green font-bold text-lg hover:underline transition">
+                        مکمل جواب پڑھیں &larr;
+                    </a>
+                `;
+                latestFatawaList.appendChild(item);
+            });
+        }
+
+        // ✅ موضوعات کے فتاویٰ (Categories Page)
+        const categoryFatawaList = document.getElementById("category-fatawa-list");
+        if (categoryFatawaList) {
+            categoryFatawaList.innerHTML = "";
+            fatawa.forEach((fatwa, index) => {
+                const item = document.createElement("a");
+                item.href = "#fatwa-detail";
+                item.className =
+                    "nav-link block bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-ash_gray hover:shadow-2xl hover:border-midnight_green-200 transition-all duration-300 transform hover:-translate-y-1";
+                item.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 flex items-center justify-center w-14 h-14 bg-midnight_green text-white font-bold text-3xl rounded-xl ml-4 shadow-md">${index + 1}</div>
+                        <div class="flex-grow">
+                            <h3 class="text-xl sm:text-2xl font-semibold text-rich_black leading-normal">${fatwa.Title}</h3>
+                            <p class="text-rich_black-600 text-base md:text-lg mt-2 mb-3 leading-relaxed line-clamp-3">
+                                ${fatwa.detailquestion ? fatwa.detailquestion.substring(0, 200) + "..." : ""}
+                            </p>
+                            <div class="flex justify-between items-center mt-4">
+                                <span class="text-midnight_green-600 font-bold text-md md:text-lg hover:underline transition">
+                                    مکمل جواب پڑھیں &larr;
+                                </span>
+                                <div class="flex items-center space-x-4 space-x-reverse text-air_force_blue">
+                                    <div class="flex items-center">
+                                        <i class="bi bi-eye-fill ml-1"></i>
+                                        <span class="font-sans">${fatwa.Views || 0}</span>
+                                    </div>
+                                    <span class="hover:text-midnight_green transition-colors"><i class="bi bi-share-fill"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                categoryFatawaList.appendChild(item);
+            });
+        }
+    } catch (error) {
+        console.error("Error fetching fatawa:", error);
+        if (document.getElementById("latest-fatawa-list")) {
+            document.getElementById("latest-fatawa-list").innerHTML =
+                `<p class="text-center text-air_force_blue">فی الحال کوئی فتاویٰ دستیاب نہیں ہیں۔</p>`;
+        }
+        if (document.getElementById("category-fatawa-list")) {
+            document.getElementById("category-fatawa-list").innerHTML =
+                `<p class="text-center text-air_force_blue">فی الحال کوئی فتاویٰ دستیاب نہیں ہیں۔</p>`;
+        }
+    }
+}
+
+// صفحہ لوڈ ہوتے ہی چلائیں
+document.addEventListener("DOMContentLoaded", loadFatawa);
+
+
+
+
+
+//Other Latest
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const res = await fetch("http://localhost:5000/api/fatwa/latest");
+    const res = await fetch("https://masailworld.onrender.com/api/fatwa/latest");
     const fatawa = await res.json();
     console.log("Latest fatawa response:", fatawa);
 
@@ -162,4 +280,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("❌ Error loading latest fatawa:", err);
   }
 });
+
+
+
+
+
+// Article 
+
 

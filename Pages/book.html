@@ -153,6 +153,9 @@
         .circular-logo {
             border-radius: 50%;
         }
+
+        /* Small helper class to force LTR direction for icon+number pairs inside RTL layout */
+        .ltr-counter { direction: ltr; display: inline-flex; align-items: center; gap: 0.35rem; }
     </style>
     <script>
         tailwind.config = {
@@ -237,16 +240,16 @@
 
           <div class="flex flex-wrap justify-center gap-3">
             <select id="filterCategory" class="bg-white text-rich_black border-2 border-ash_gray rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-midnight_green">
-              <option>تمام کیٹیگریز</option>
-              <option>فقہ</option>
-              <option>حدیث</option>
-              <option>عقائد</option>
+              <option value="">تمام کیٹیگریز</option>
+              <option value="فقہ">فقہ</option>
+              <option value="حدیث">حدیث</option>
+              <option value="عقائد">عقائد</option>
             </select>
 
             <select id="sortBooks" class="bg-white text-rich_black border-2 border-ash_gray rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-midnight_green">
-              <option>تازہ ترین</option>
-              <option>سب سے زیادہ دیکھی گئیں</option>
-              <option>سب سے زیادہ ڈاؤن لوڈ شدہ</option>
+              <option value="new">تازہ ترین</option>
+              <option value="most_viewed">سب سے زیادہ دیکھی گئیں</option>
+              <option value="most_downloaded">سب سے زیادہ ڈاؤن لوڈ شدہ</option>
             </select>
           </div>
         </div>
@@ -256,47 +259,23 @@
       <h2 class="text-3xl md:text-4xl font-bold text-center text-midnight_green mb-8">منتخب کتب</h2>
 
       <div id="booksGrid" class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-6 text-center mb-12">
-        <!-- Each book card (example items). Replace / loop server-side as needed. -->
-        <a href="book-detail.html" class="block bg-white p-4 md:p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
-          <img src="https://placehold.co/150x200/598392/ffffff?text=Fatawa+Razawiyyah" alt="Fatawa Razawiyyah" class="w-full h-auto object-cover rounded-md mb-2 shadow-md">
-          <h3 class="text-lg font-bold text-rich_black">فتاویٰ رضویہ</h3>
-          <div class="text-xs text-air_force_blue my-1">
-            <span class="bg-midnight_green-100 text-midnight_green-600 px-2 py-0.5 rounded-full inline-block">فقہ</span>
-          </div>
-          <div class="flex justify-center items-center gap-3 text-sm text-air_force_blue">
-            <div class="flex items-center"><i class="bi bi-eye-fill ml-1"></i><span>15k</span></div>
-            <div class="flex items-center"><i class="bi bi-download ml-1"></i><span>8k</span></div>
-          </div>
-        </a>
-
-        <a href="book-detail.html" class="block bg-white p-4 md:p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
-          <img src="https://placehold.co/150x200/598392/ffffff?text=Bahare+Shariat" alt="Bahare Shariat" class="w-full h-auto object-cover rounded-md mb-2 shadow-md">
-          <h3 class="text-lg font-bold text-rich_black">بہارِ شریعت</h3>
-          <div class="text-xs text-air_force_blue my-1">
-            <span class="bg-midnight_green-100 text-midnight_green-600 px-2 py-0.5 rounded-full inline-block">فقہ</span>
-          </div>
-          <div class="flex justify-center items-center gap-3 text-sm text-air_force_blue">
-            <div class="flex items-center"><i class="bi bi-eye-fill ml-1"></i><span>12k</span></div>
-            <div class="flex items-center"><i class="bi bi-download ml-1"></i><span>7k</span></div>
-          </div>
-        </a>
-
-        <!-- Add more book cards as in original... -->
+        <!-- Dynamic content will be injected here -->
+        <p id="books-loading" class="col-span-full text-center text-air_force_blue">کتابیں لوڈ ہو رہی ہیں...</p>
       </div>
 
       <!-- Book Categories -->
       <h2 class="text-3xl md:text-4xl font-bold text-center text-midnight_green mb-8">کتاب کیٹیگری</h2>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 text-center mb-12">
-        <a href="books-fiqh.html" class="block bg-white p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+        <a href="./fatawa.html" class="block bg-white p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
           <i class="bi bi-book text-4xl text-midnight_green mb-4 inline-block"></i>
           <h3 class="font-bold text-lg text-rich_black">فقہ</h3>
         </a>
-        <a href="books-hadith.html" class="block bg-white p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+        <a href="./fatawa.html" class="block bg-white p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
           <i class="bi bi-journal-text text-4xl text-midnight_green mb-4 inline-block"></i>
           <h3 class="font-bold text-lg text-rich_black">حدیث</h3>
         </a>
-        <a href="books-aqaaid.html" class="block bg-white p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+        <a href="./fatawa.html" class="block bg-white p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
           <i class="bi bi-gem text-4xl text-midnight_green mb-4 inline-block"></i>
           <h3 class="font-bold text-lg text-rich_black">عقائد</h3>
         </a>
@@ -304,11 +283,11 @@
           <i class="bi bi-person-lines-fill text-4xl text-midnight_green mb-4 inline-block"></i>
           <h3 class="font-bold text-lg text-rich_black">سیرت</h3>
         </a>
-        <a href="books-tasawwuf.html" class="block bg-white p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+        <a href="./fatawa.html" class="block bg-white p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
           <i class="bi bi-moon-stars-fill text-4xl text-midnight_green mb-4 inline-block"></i>
           <h3 class="font-bold text-lg text-rich_black">تصوف</h3>
         </a>
-        <a href="books-misc.html" class="block bg-white p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+        <a href="./fatawa.html" class="block bg-white p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
           <i class="bi bi-grid-fill text-4xl text-midnight_green mb-4 inline-block"></i>
           <h3 class="font-bold text-lg text-rich_black">متفرقات</h3>
         </a>
@@ -373,22 +352,188 @@
     </ul>
   </nav>
 
-  <!-- Optional: small script to enable basic search filtering on the example cards -->
+  <!-- Scripts: dynamic loading + filter/sort -->
   <script>
-    const searchInput = document.getElementById('searchBooks');
-    const booksGrid = document.getElementById('booksGrid');
+    const API_BASE = "https://masailworld.onrender.com/api"; // اگر آپ کا API کسی اور domain/port پر ہے تو یہاں تبدیل کریں
 
-    if (searchInput && booksGrid) {
-      searchInput.addEventListener('input', (e) => {
-        const q = e.target.value.trim().toLowerCase();
-        const cards = booksGrid.querySelectorAll('a');
-        cards.forEach(card => {
-          const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
-          if (!q || title.includes(q)) card.style.display = '';
-          else card.style.display = 'none';
-        });
-      });
+    const booksGrid = document.getElementById('booksGrid');
+    const booksLoading = document.getElementById('books-loading');
+    const searchInput = document.getElementById('searchBooks');
+    const filterCategory = document.getElementById('filterCategory');
+    const sortBooks = document.getElementById('sortBooks');
+
+    // store loaded books for client-side filtering/sorting
+    let allBooks = [];
+
+    function createBookCard(book) {
+      // safe fallbacks
+      const coverUrl = book.coverUrl || `${API_BASE}/book/${book.id}/cover` || 'https://placehold.co/150x200/598392/ffffff?text=No+Cover';
+      const pdfUrl = book.pdfUrl || `${API_BASE}/book/${book.id}/pdf` || '#';
+      const title = escapeHtml(book.BookName || book.bookName || "نامعلوم کتاب");
+      const writer = escapeHtml(book.BookWriter || book.author || "نامعلوم مصنف");
+      const desc = escapeHtml(book.BookDescription || book.description || "");
+      const views = Number(book.Views || book.views || 0);
+      const downloads = Number(book.Downloads || book.downloads || 0);
+      const category = book.Category || book.category || "";
+
+      // Return a DOM element instead of string to avoid injection issues
+      const a = document.createElement('a');
+      a.href = pdfUrl;
+      a.target = "_blank";
+      a.className = "block bg-white p-4 md:p-6 rounded-2xl shadow-lg border border-ash_gray/50 hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300";
+
+      a.innerHTML = `
+        <img src="${coverUrl}" alt="${title}" class="w-full h-48 object-cover rounded-md mb-2 shadow-md" />
+        <h3 class="text-lg font-bold text-rich_black mb-1">${title}</h3>
+        <p class="text-sm text-air_force_blue mb-2">${writer}</p>
+        <p class="text-xs text-gray-600 line-clamp-1 mb-3">${desc}</p>
+        <div class="flex justify-center items-center gap-3 text-sm text-air_force_blue">
+          <div class="ltr-counter"><i class="bi bi-eye-fill"></i><span>${abbreviateNumber(views)}</span></div>
+          <div class="ltr-counter"><i class="bi bi-download"></i><span>${abbreviateNumber(downloads)}</span></div>
+        </div>
+      `;
+
+      // attach meta attributes for filtering (so we can filter easily)
+      a.dataset.title = (book.BookName || book.bookName || "").toString().toLowerCase();
+      a.dataset.category = (category || "").toString();
+
+      return a;
     }
+
+    function abbreviateNumber(num) {
+      // simple abbreviation: 1200 -> 1.2k
+      if (num >= 1_000_000) return (num/1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (num >= 1_000) return (num/1_000).toFixed(1).replace(/\.0$/, '') + 'k';
+      return num.toString();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderBooks(list) {
+      booksGrid.innerHTML = '';
+      if (!list || list.length === 0) {
+        const p = document.createElement('p');
+        p.className = 'col-span-full text-center text-air_force_blue';
+        p.textContent = 'فی الحال کوئی کتاب دستیاب نہیں ہے۔';
+        booksGrid.appendChild(p);
+        return;
+      }
+
+      // append cards
+      const fragment = document.createDocumentFragment();
+      list.forEach(b => {
+        fragment.appendChild(createBookCard(b));
+      });
+      booksGrid.appendChild(fragment);
+    }
+
+    function applyFiltersAndSort() {
+      const q = (searchInput.value || '').trim().toLowerCase();
+      const category = (filterCategory.value || '').trim();
+      const sortBy = sortBooks.value || 'new';
+
+      let filtered = allBooks.slice();
+
+      if (category) {
+        filtered = filtered.filter(b => {
+          const cat = (b.Category || b.category || '').toString();
+          return cat === category;
+        });
+      }
+
+      if (q) {
+        filtered = filtered.filter(b => {
+          const title = (b.BookName || b.bookName || '').toString().toLowerCase();
+          const writer = (b.BookWriter || b.author || '').toString().toLowerCase();
+          return title.includes(q) || writer.includes(q);
+        });
+      }
+
+      // sorting (best-effort, depends on fields existing)
+      if (sortBy === 'most_viewed') {
+        filtered.sort((a,b) => (Number(b.Views||b.views||0) - Number(a.Views||a.views||0)));
+      } else if (sortBy === 'most_downloaded') {
+        filtered.sort((a,b) => (Number(b.Downloads||b.downloads||0) - Number(a.Downloads||a.downloads||0)));
+      } else {
+        // 'new' - try by createdAt or id (descending)
+        if (filtered.every(x => x.createdAt)) {
+          filtered.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+        } else {
+          filtered.sort((a,b) => (Number(b.id || b.ID || 0) - Number(a.id || a.ID || 0)));
+        }
+      }
+
+      renderBooks(filtered);
+    }
+
+    async function loadBooksFromApi(limit = 100, offset = 0) {
+      try {
+        booksLoading && (booksLoading.textContent = 'کتابیں لوڈ ہو رہی ہیں...');
+        // Example endpoint: GET /api/book?limit=20&offset=0
+        const resp = await fetch(`${API_BASE}/book?limit=${limit}&offset=${offset}`);
+        if (!resp.ok) throw new Error(`API responded with ${resp.status}`);
+        const data = await resp.json();
+
+        // Expecting an array. If API returns object with items property, adapt:
+        let items = [];
+        if (Array.isArray(data)) items = data;
+        else if (Array.isArray(data.items)) items = data.items;
+        else if (Array.isArray(data.data)) items = data.data;
+        else {
+          // try to coerce single item or empty
+          if (data) items = Array.isArray(data) ? data : (data.items || data.data || []);
+        }
+
+        allBooks = items.map(item => {
+          // normalize minimal fields to be safe when different property names used
+          return {
+            id: item.id ?? item.ID ?? item.bookId ?? item.BookId,
+            BookName: item.BookName ?? item.bookName ?? item.title ?? item.Title,
+            BookWriter: item.BookWriter ?? item.author ?? item.Author,
+            BookDescription: item.BookDescription ?? item.description ?? item.Description,
+            Views: item.Views ?? item.views ?? item.viewCount ?? 0,
+            Downloads: item.Downloads ?? item.downloads ?? item.downloadCount ?? 0,
+            Category: item.Category ?? item.category ?? item.categoryName ?? '',
+            coverUrl: item.coverUrl ?? item.cover ?? item.image ?? null,
+            pdfUrl: item.pdfUrl ?? item.pdf ?? item.file ?? null,
+            createdAt: item.createdAt ?? item.created_at ?? item.CreatedAt ?? null
+          };
+        });
+
+        applyFiltersAndSort();
+      } catch (err) {
+        console.error("Error loading books:", err);
+        booksGrid.innerHTML = `<p class="col-span-full text-center text-air_force_blue">کتب لوڈ کرنے میں مسئلہ آیا۔ براہِ کرم بعد میں دوبارہ کوشش کریں۔</p>`;
+      } finally {
+        if (booksLoading) booksLoading.remove();
+      }
+    }
+
+    // Attach event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      // initial load
+      loadBooksFromApi(100, 0);
+
+      // filters
+      searchInput && searchInput.addEventListener('input', () => {
+        applyFiltersAndSort();
+      });
+      filterCategory && filterCategory.addEventListener('change', () => {
+        applyFiltersAndSort();
+      });
+      sortBooks && sortBooks.addEventListener('change', () => {
+        applyFiltersAndSort();
+      });
+    });
+
   </script>
 </body>
 </html>
