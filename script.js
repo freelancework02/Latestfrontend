@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
 
       // Use slug if available, else ID
-      const link = fatwa.slug ? `/fatwa/${fatwa.slug}` : `/fatwa/${fatwa.id}`;
+ const link = fatwa.id ? `./Pages/fatwa-detail.html/${fatwa.id}` : `./Pages/fatwa-detail.html/${fatwa.id}`;
 
       // Fallbacks if views or details not in DB yet
       const views = fatwa.Views || 0;
@@ -251,13 +251,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           </div>
           <div class="flex-grow">
             <h3 class="text-xl sm:text-2xl font-semibold text-rich_black leading-normal">
-              <a href="${link}" class="hover:underline">${fatwa.Title}</a>
+              <a href="./Pages/fatwa-detail.html?id=${fatwa.id}" class="hover:underline">${fatwa.Title}</a>
             </h3>
             <p class="text-rich_black-600 text-base md:text-lg mt-2 mb-3 leading-relaxed line-clamp-3">
               ${details}
             </p>
             <div class="flex justify-between items-center mt-4">
-              <a href="${link}" class="text-midnight_green-600 font-bold text-md md:text-lg hover:underline transition">
+              <a href="./Pages/fatwa-detail.html?id=${fatwa.id}" class="text-midnight_green-600 font-bold text-md md:text-lg hover:underline transition">
                 مکمل جواب پڑھیں &larr;
               </a>
               <div class="flex items-center space-x-4 space-x-reverse text-air_force_blue">

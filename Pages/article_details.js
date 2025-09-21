@@ -17,6 +17,16 @@ const articleId = getQueryParam("id"); // ?id=123
 const articleContainer = document.querySelector("article");
 const relatedContainer = document.querySelector(".grid");
 
+// ✅ Loader utilities
+function showLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) loader.style.display = "flex";
+}
+function hideLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) loader.style.display = "none";
+}
+
 // ✅ Helper: check if ArticleText is empty
 function sanitizeArticleText(text) {
   if (!text || text.trim() === "" || text.trim() === "<p><br></p>") {
@@ -27,6 +37,7 @@ function sanitizeArticleText(text) {
 
 // ✅ Fetch single article detail
 async function fetchArticleDetail(id) {
+  showLoader(); // show loader before request
   try {
     const res = await fetch(`https://masailworld.onrender.com/api/article/${id}`);
     if (!res.ok) throw new Error("Failed to fetch article");
@@ -43,23 +54,33 @@ async function fetchArticleDetail(id) {
         <div class="flex items-center text-air_force_blue mb-4 md:mb-0">
           <span class="ml-2">تحریر: ${article.writer || "نامعلوم"}</span>
           <span class="mx-2">|</span>
-          <span>تاریخ اشاعت: ${article.createdAt
-            ? new Date(article.createdAt).toLocaleDateString("ur-PK", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
-            : "نامعلوم"}</span>
+          <span>تاریخ اشاعت: ${
+            article.createdAt
+              ? new Date(article.createdAt).toLocaleDateString("ur-PK", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+              : "نامعلوم"
+          }</span>
         </div>
 
         <div class="flex items-center space-x-6 space-x-reverse text-air_force_blue text-lg">
-          <div class="flex items-center"><i class="bi bi-eye-fill ml-2"></i><span class="font-sans">${article.Views || 0}</span></div>
-          <div class="flex items-center"><i class="bi bi-hand-thumbs-up-fill ml-2"></i><span class="font-sans">${article.Likes || 0}</span></div>
-          <a href="#" class="flex items-center hover:text-midnight_green transition-colors"><i class="bi bi-share-fill"></i></a>
+          <div class="flex items-center">
+            <i class="bi bi-eye-fill ml-2"></i><span class="font-sans">${article.Views || 0}</span>
+          </div>
+          <div class="flex items-center">
+            <i class="bi bi-hand-thumbs-up-fill ml-2"></i><span class="font-sans">${article.Likes || 0}</span>
+          </div>
+          <a href="#" class="flex items-center hover:text-midnight_green transition-colors">
+            <i class="bi bi-share-fill"></i>
+          </a>
         </div>
       </div>
 
-      <img src="https://masailworld.onrender.com/api/article/${article.id}/image" alt="${article.Title}" class="w-full h-auto object-cover rounded-xl shadow-md mb-8">
+      <img src="https://masailworld.onrender.com/api/article/${article.id}/image" 
+           alt="${article.Title}" 
+           class="w-full h-auto object-cover rounded-xl shadow-md mb-8">
 
       <div class="text-rich_black-600 text-base md:text-xl space-y-6 leading-relaxed">
         ${safeText}
@@ -68,11 +89,14 @@ async function fetchArticleDetail(id) {
   } catch (err) {
     console.error(err);
     articleContainer.innerHTML = `<p class="text-red-600 text-center">مضمون لوڈ کرنے میں مسئلہ پیش آیا۔</p>`;
+  } finally {
+    hideLoader(); // always hide loader
   }
 }
 
 // ✅ Fetch related articles
 async function fetchRelatedArticles(currentId) {
+  showLoader(); // show loader before request
   try {
     const res = await fetch(`https://masailworld.onrender.com/api/article?limit=3&excludeId=${currentId}`);
     if (!res.ok) throw new Error("Failed to fetch related articles");
@@ -95,9 +119,10 @@ async function fetchRelatedArticles(currentId) {
   } catch (err) {
     console.error(err);
     relatedContainer.innerHTML = `<p class="text-red-600 text-center">متعلقہ مضامین لوڈ کرنے میں مسئلہ پیش آیا۔</p>`;
+  } finally {
+    hideLoader(); // always hide loader
   }
 }
-
 
 // ✅ Initialize on page load
 if (articleId) {
