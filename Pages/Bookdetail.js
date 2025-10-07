@@ -21,12 +21,12 @@ function hideLoader() {
 
       try {
         // Fetch book details
-        const res = await fetch(`https://masailworld.onrender.com/api/book/${id}`);
+        const res = await fetch(`https://api.masailworld.com/api/book/${id}`);
         if (!res.ok) throw new Error("Book not found");
         const book = await res.json();
 
-        const coverUrl = `https://masailworld.onrender.com/api/book/${id}/cover`;
-        const pdfUrl = `https://masailworld.onrender.com/api/book/${id}/pdf`;
+        const coverUrl = `https://api.masailworld.com/api/book/${id}/cover`;
+        const pdfUrl = `https://api.masailworld.com/api/book/${id}/pdf`;
 
         document.getElementById("book-detail").innerHTML = `
           <div class="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8">

@@ -230,7 +230,7 @@ async function fetchFatawa() {
   isLoading = true;
   if (offset === 0) { loader.style.display = 'flex'; } else { inlineLoader.classList.remove('hidden'); loadMoreBtn.disabled = true; }
   try {
-    const res = await fetch(`https://masailworld.onrender.com/api/fatwa?limit=${limit}&offset=${offset}`);
+    const res = await fetch(`https://api.masailworld.com/api/fatwa?limit=${limit}&offset=${offset}`);
     const newData = await res.json();
     if (!newData.length) {
       allLoaded = true;

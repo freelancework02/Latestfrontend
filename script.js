@@ -363,3 +363,222 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Article 
 
 
+
+
+
+
+//  Search functionality 
+
+/* ========= Home Search Dropdown for Fatawa ========= */
+
+/** ---------- Small helpers (plain text only) ---------- */
+const urLocale = Intl.NumberFormat('ur-PK');
+
+function htmlToPlainText(input = '') {
+  // Remove any HTML and decode entities by leveraging the browser parser
+  const tpl = document.createElement('template');
+  tpl.innerHTML = String(input);
+  const text = (tpl.content.textContent || '').replace(/\s+/g, ' ').trim();
+  return text;
+}
+
+const escapeText = (s='') => String(s)
+  .replaceAll('&','&amp;').replaceAll('<','&lt;')
+  .replaceAll('>','&gt;').replaceAll('"','&quot;')
+  .replaceAll("'","&#039;");
+
+const truncate = (s = '', n = 140) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
+
+const debounce = (fn, ms=250) => {
+  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+};
+
+/**
+ * ---------- Server-side search (fallback to local) ----------
+ * Adjust endpoints/params if your backend differs.
+ */
+async function searchFatawaServer(query, limit = 10) {
+  const base = 'https://api.masailworld.com/api/fatwa';
+  const urls = [
+    `${base}?search=${encodeURIComponent(query)}&limit=${limit}&offset=0`,
+    `${base}/search?query=${encodeURIComponent(query)}&limit=${limit}&offset=0`,
+  ];
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (Array.isArray(data) && data.length) {
+        // Normalize shape
+        return data.map(row => ({
+          id: row.id ?? row._id ?? row.slug ?? '',
+          title: row.Title ?? row.title ?? row.question ?? '',
+          snippet: row.detailquestion ?? row.details ?? '',
+          views: Number(row.Views ?? row.views ?? 0)
+        })).filter(x => x.id && x.title);
+      }
+    } catch (_) { /* try next */ }
+  }
+  return [];
+}
+
+/** ---------- Local search fallback (uses FATAWA_DATA) ---------- */
+function searchFatawaLocal(query, limit = 10) {
+  const q = query.trim();
+  if (!q) return [];
+  const hits = (Array.isArray(FATAWA_DATA) ? FATAWA_DATA : [])
+    .filter(f =>
+      String(f.question || '').includes(q) ||
+      String(f.details || '').includes(q)
+    )
+    .slice(0, limit)
+    .map(f => ({
+      id: f.id,
+      title: f.question || '',
+      snippet: f.details || '',
+      views: f.views || ''
+    }));
+  return hits;
+}
+
+/** ---------- Home search dropdown init ---------- */
+function initHomeFatawaSearchDropdown({
+  inputEl = document.getElementById('searchInput'),
+  dropdownEl = document.getElementById('searchDropdown'),
+  minChars = 2,
+  limit = 10
+} = {}) {
+  if (!inputEl || !dropdownEl) return;
+
+  let items = [];
+  let activeIndex = -1;
+
+  const closeDropdown = () => {
+    dropdownEl.classList.add('hidden');
+    dropdownEl.innerHTML = '';
+    activeIndex = -1;
+  };
+
+  const openDetail = (id) => {
+    if (!id) return;
+    window.location.href = `./Pages/fatwa-detail.html?id=${encodeURIComponent(id)}`;
+  };
+
+  const renderDropdown = (results) => {
+    items = results;
+    activeIndex = -1;
+
+    if (!items.length) {
+      dropdownEl.innerHTML = `
+        <div class="py-3 px-4 text-air_force_blue">کوئی نتیجہ نہیں ملا</div>
+      `;
+      dropdownEl.classList.remove('hidden');
+      return;
+    }
+
+    dropdownEl.innerHTML = items.map((item, i) => {
+      // Force plain text (strip tags), then escape and truncate for safety
+      const titlePlain   = htmlToPlainText(item.title || 'بلا عنوان');
+      const snippetPlain = htmlToPlainText(item.snippet || '');
+      const title   = escapeText(titlePlain);
+      const snippet = escapeText(truncate(snippetPlain, 140));
+      const views = (typeof item.views === 'number')
+        ? urLocale.format(item.views)
+        : escapeText(String(item.views || ''));
+
+      return `
+        <button type="button"
+          data-index="${i}"
+          class="w-full text-right block py-3 px-4 hover:bg-ash_gray focus:bg-ash_gray transition outline-none">
+          <div class="font-semibold text-rich_black">${title}</div>
+          ${snippet ? `<div class="text-sm text-air_force_blue mt-1">${snippet}</div>` : ''}
+          <div class="text-xs text-air_force_blue mt-1 flex items-center justify-end">
+            <i class="bi bi-eye-fill ml-1"></i><span class="font-sans">${views}</span>
+          </div>
+        </button>
+      `;
+    }).join('');
+
+    dropdownEl.classList.remove('hidden');
+
+    dropdownEl.querySelectorAll('button[data-index]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.getAttribute('data-index'));
+        const chosen = items[idx];
+        if (chosen) openDetail(chosen.id);
+      });
+    });
+  };
+
+  const doSearch = debounce(async (value) => {
+    const q = value.trim();
+    if (q.length <= minChars) {
+      closeDropdown();
+      return;
+    }
+    let results = await searchFatawaServer(q, limit);
+    if (!results.length) {
+      results = searchFatawaLocal(q, limit);
+    }
+    renderDropdown(results);
+  }, 250);
+
+  // Input handlers
+  inputEl.addEventListener('input', (e) => {
+    doSearch(e.target.value);
+  });
+
+  inputEl.addEventListener('keydown', (e) => {
+    if (dropdownEl.classList.contains('hidden')) return;
+
+    const max = items.length - 1;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = Math.min(max, activeIndex + 1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = Math.max(0, activeIndex - 1);
+    } else if (e.key === 'Enter') {
+      if (activeIndex >= 0 && items[activeIndex]) {
+        e.preventDefault();
+        openDetail(items[activeIndex].id);
+      }
+    } else if (e.key === 'Escape') {
+      closeDropdown();
+      return;
+    } else {
+      return;
+    }
+
+    dropdownEl.querySelectorAll('button[data-index]').forEach((btn, i) => {
+      if (i === activeIndex) {
+        btn.classList.add('bg-ash_gray');
+        btn.scrollIntoView({ block: 'nearest' });
+      } else {
+        btn.classList.remove('bg-ash_gray');
+      }
+    });
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (e.target === inputEl || dropdownEl.contains(e.target)) return;
+    closeDropdown();
+  });
+
+  // Close on blur if focus moves away
+  inputEl.addEventListener('blur', () => {
+    setTimeout(() => {
+      if (!dropdownEl.contains(document.activeElement)) closeDropdown();
+    }, 150);
+  });
+}
+
+/* ---------- Initialize for the Home search bar ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  const inputEl = document.getElementById('searchInput');       // already in your markup
+  const dropdownEl = document.getElementById('searchDropdown'); // already in your markup
+  initHomeFatawaSearchDropdown({ inputEl, dropdownEl });
+});
+
+
