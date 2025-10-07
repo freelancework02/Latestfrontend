@@ -16,8 +16,8 @@
 
 
     <!-- Custome Google Search engine  -->
-    <script async src="https://cse.google.com/cse.js?cx=a253de728c98d430e">
-    </script>
+    <!-- <script async src="https://cse.google.com/cse.js?cx=a253de728c98d430e">
+    </script> -->
 
     <style>
         @font-face {
@@ -276,7 +276,8 @@
     <!-- Mobile-only Social Media and Ask Link (New) -->
     <div
         class="fixed top-0 left-0 right-0 md:hidden bg-rich_black text-white flex justify-between items-center py-2 px-4 z-50">
-        <a href="./Pages/Question.html" class="nav-link text-sm text-beige hover:text-ash_gray transition">سوال پوچھیں</a>
+        <a href="./Pages/Question.html" class="nav-link text-sm text-beige hover:text-ash_gray transition">سوال
+            پوچھیں</a>
         <div class="flex items-center space-x-4 space-x-reverse">
             <a href="https://www.facebook.com/share/1PhWgmvP2g/" class="hover:text-beige transition text-base"><i
                     class="bi bi-facebook"></i></a>
@@ -294,7 +295,8 @@
         <!-- Social Media Links -->
         <div class="bg-rich_black text-air_force_blue-700 py-2">
             <div class="container mx-auto px-4 sm:px-6 flex justify-between items-center space-x-reverse text-lg">
-                <a href="./Pages/Question.html" class="nav-link text-beige hover:text-ash_gray transition">سوال پوچھیں</a>
+                <a href="./Pages/Question.html" class="nav-link text-beige hover:text-ash_gray transition">سوال
+                    پوچھیں</a>
                 <div class="flex items-center space-x-4 space-x-reverse">
                     <a href="https://www.facebook.com/share/1PhWgmvP2g/" class="hover:text-beige transition"><i
                             class="bi bi-facebook"></i></a>
@@ -374,40 +376,53 @@
 
                 <!-- Search Section (Integrated) -->
                 <section id="qs-search-bar" class="bg-beige-600 py-8 relative -mt-16 z-20">
-                    <!-- <div class="container mx-auto px-6">
-                        <div class="max-w-3xl mx-auto text-center">
-                            
-                            <h2 class="text-3xl md:text-4xl font-bold text-midnight_green mb-6">آپ کیا تلاش کرنا چاہتے ہیں؟</h2>
-                            <div class="max-w-2xl mx-auto px-4 relative">
-                                <div class="relative flex items-center shadow-lg rounded-full overflow-hidden border-2 border-ash_gray/50">
-                                    <span class="absolute right-3 text-air_force_blue">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
-                                        </svg>
-                                    </span>
-                                    <div class="gcse-search">
-                                    <input id="searchInput" type="text" placeholder="فتویٰ یا مضمون تلاش کریں..." class="w-full py-4 pr-12 pl-6 text-right text-gray-700 focus:outline-none focus:ring-4 focus:ring-midnight_green-400 focus:border-midnight_green transition-all duration-300 bg-white" />
-                               </div> </div>
-                                <div id="searchDropdown" class="absolute z-50 w-full mt-2 bg-white border border-ash_gray/50 rounded-2xl shadow-xl hidden max-h-64 overflow-y-auto"></div>
-                            </div>
-                        </div>
-                    </div> -->
-
                     <div class="container mx-auto px-6">
                         <div class="max-w-3xl mx-auto text-center">
+                            <h2 class="text-3xl md:text-4xl font-bold text-midnight_green mb-6">
+                                آپ کیا تلاش کرنا چاہتے ہیں؟
+                            </h2>
+                            <div class="max-w-2xl mx-auto px-4 relative">
+                                <div
+                                    class="relative flex items-center shadow-lg rounded-full overflow-hidden border-2 border-ash_gray/50 bg-white">
 
-                            <!-- Heading -->
+                                    <!-- Search Input -->
+                                    <input id="searchInput" type="text" placeholder="فتویٰ یا مضمون تلاش کریں..."
+                                        class="w-full py-4 pr-12 pl-6 text-right text-gray-700 focus:outline-none focus:ring-4 focus:ring-midnight_green-400 focus:border-midnight_green transition-all duration-300" />
+
+                                    <!-- Search Icon (non-blocking) -->
+                                    <span class="absolute right-4 text-air_force_blue pointer-events-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+                                        </svg>
+                                    </span>
+                                </div>
+
+                                <!-- Dropdown -->
+                                <div id="searchDropdown"
+                                    class="absolute z-50 w-full mt-2 bg-white border border-ash_gray/50 rounded-2xl shadow-xl hidden max-h-64 overflow-y-auto">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- <div class="container mx-auto px-6">
+                        <div class="max-w-3xl mx-auto text-center">
+
+                           
                             <h2 class="text-3xl md:text-4xl font-bold text-midnight_green mb-6">
                                 آپ کیا تلاش کرنا چاہتے ہیں؟
                             </h2>
 
-                            <!-- Google Search Box -->
+                           
                             <div class="max-w-3xl mx-auto px-4">
                                 <div class="gcse-search"></div>
                             </div>
 
                         </div>
-                    </div>
+                    </div> -->
                     <!-- Ticker Section (New) -->
                     <!-- <div class="container mx-auto px-6 mt-8">
                         <div id="latest-fatawa-ticker" class="bg-white p-3 rounded-xl shadow-lg border border-ash_gray/50 horizontal-ticker">
@@ -427,12 +442,12 @@
                                 <i class="bi bi-gem text-5xl text-midnight_green mb-4 inline-block"></i>
                                 <h3 class="font-bold text-xl text-rich_black">عقائد</h3>
                             </a>
-                             <a href="./Pages/fatawa.html"
+                            <a href="./Pages/fatawa.html"
                                 class="nav-link block bg-beige-600 p-6 rounded-2xl shadow-lg hover:bg-ash_gray hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                                 <i class="bi bi-moon-stars-fill text-5xl text-midnight_green mb-4 inline-block"></i>
                                 <h3 class="font-bold text-xl text-rich_black">عبادات</h3>
                             </a>
-                             <a href="./Pages/fatawa.html"
+                            <a href="./Pages/fatawa.html"
                                 class="nav-link block bg-beige-600 p-6 rounded-2xl shadow-lg hover:bg-ash_gray hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                                 <i class="bi bi-briefcase-fill text-5xl text-midnight_green mb-4 inline-block"></i>
                                 <h3 class="font-bold text-xl text-rich_black">معاملات</h3>
