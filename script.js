@@ -1,51 +1,4 @@
 
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.querySelector("#page-ask form");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault(); // stop normal form submit
-
-    // Collect values
-    const questionername = document.getElementById("name").value.trim();
-    const questionaremail = document.getElementById("email").value.trim();
-    const Title = document.getElementById("subject").value; // using subject as Title
-    const detailquestion = document.getElementById("question").value.trim();
-
-    // Generate a slug from title (optional: backend can also handle this)
-    const slug = Title.replace(/\s+/g, "-").toLowerCase() + "-" + Date.now();
-
-    // Build request payload
-    const data = {
-      Title,
-      slug,
-      detailquestion,
-      questionername,
-      questionaremail,
-    };
-
-    try {
-      const res = await fetch("https://masailworld.onrender.com/api/fatwa/website", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        alert("✅ سوال کامیابی کے ساتھ بھیج دیا گیا!");
-        form.reset();
-      } else {
-        alert("❌ خرابی: " + (result.error || "سوال بھیجنے میں ناکامی"));
-      }
-    } catch (error) {
-      console.error("Error submitting question:", error);
-      alert("❌ نیٹ ورک میں خرابی، دوبارہ کوشش کریں۔");
-    }
-  });
-});
 
 
 
@@ -91,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadLatestFatawa() {
     try {
-        const response = await fetch("https://masailworld.onrender.com/api/fatwa/latest");
+        const response = await fetch("https://api.masailworld.com/api/fatwa/latest");
         const fatawa = await response.json();
 
         // صرف 3 فتاویٰ لیں
@@ -128,7 +81,7 @@ document.addEventListener("DOMContentLoaded", loadLatestFatawa);
 
 async function loadFatawa() {
     try {
-        const response = await fetch("https://masailworld.onrender.com/api/fatwa/latest");
+        const response = await fetch("https://api.masailworld.com/api/fatwa/latest");
         const fatawa = await response.json();
         console.log("the loadfatawa", fatawa);
 
@@ -284,7 +237,7 @@ document.addEventListener("DOMContentLoaded", loadFatawa);
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const res = await fetch("https://masailworld.onrender.com/api/fatwa/latest");
+    const res = await fetch("https://api.masailworld.com/api/fatwa/latest");
     const fatawa = await res.json();
     console.log("Latest fatawa response:", fatawa);
 

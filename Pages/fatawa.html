@@ -60,7 +60,7 @@
 
    <!-- Mobile-only Social Media and Ask Link (New) -->
     <div class="fixed top-0 left-0 right-0 md:hidden bg-rich_black text-white flex justify-between items-center py-2 px-4 z-50">
-        <a href="https://masailworld.com/#ask" class=" text-sm text-beige hover:text-ash_gray transition">سوال پوچھیں</a>
+        <a href="./Question.html" class=" text-sm text-beige hover:text-ash_gray transition">سوال پوچھیں</a>
         <div class="flex items-center space-x-4 space-x-reverse">
             <a href="https://www.facebook.com/share/1PhWgmvP2g/" class="hover:text-beige transition text-base"><i class="bi bi-facebook"></i></a>
             <a href="https://www.facebook.com/share/1PhWgmvP2g/" class="hover:text-beige transition text-base"><i class="bi bi-twitter-x"></i></a>
@@ -74,7 +74,7 @@
         <!-- Social Media Links -->
         <div class="bg-rich_black text-air_force_blue-700 py-2">
             <div class="container mx-auto px-4 sm:px-6 flex justify-between items-center space-x-reverse text-lg">
-                <a href="https://masailworld.com#ask" class="nav-link text-beige hover:text-ash_gray transition">سوال پوچھیں</a>
+                <a href="./Question.html" class="nav-link text-beige hover:text-ash_gray transition">سوال پوچھیں</a>
                 <div class="flex items-center space-x-4 space-x-reverse">
                     <a  href="https://www.facebook.com/share/1PhWgmvP2g/" class="hover:text-beige transition"><i class="bi bi-facebook"></i></a>
                     <a href="https://www.facebook.com/share/1PhWgmvP2g/"  class="hover:text-beige transition"><i class="bi bi-twitter-x"></i></a>
@@ -99,30 +99,34 @@
                     <a href="https://masailworld.com/Pages/articles.html" class=" text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">مضامین</a>
                     <a href="#https://masailworld.com/Pages/Categoryfatawa.html" class=" text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">موضوعات</a>
                     <a href="https://masailworld.com/Pages/book.html" class=" text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">اسلامی کتب</a>
-                    <a href="https://masailworld.com#ask" class=" text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">سوال پوچھیں</a>
+                    <a href="./Question.html" class=" text-midnight_green hover:text-midnight_green-600 transition text-lg font-semibold">سوال پوچھیں</a>
                 </div>
             </div>
         </nav>
     </header>
 
 
-  <main class="container mx-auto px-4 pt-24 pb-12 max-w-5xl">
-    <a href="https://masailworld.com" class="text-midnight_green font-semibold">&larr; صفحہ اول</a>
-    <h1 class="text-4xl font-bold text-center mb-8">تمام فتاویٰ</h1>
+ <main class="container mx-auto px-4 pt-24 pb-12 max-w-5xl">
+  <a href="https://masailworld.com" class="text-midnight_green font-semibold">&larr; صفحہ اول</a>
+  <h1 class="text-4xl font-bold text-center mb-8">تمام فتاویٰ</h1>
 
-    <div class="max-w-2xl mx-auto mb-8">
-      <div class="relative">
-        <input id="searchInput" type="text" placeholder="فتویٰ یا مضمون تلاش کریں..." class="w-full p-4 pr-12 rounded-full border border-black focus:outline-none focus:ring-2" />
-        <span class="absolute top-1/2 -translate-y-1/2 left-4 text-gray-500"><i class="bi bi-search"></i></span>
-      </div>
+  <!-- Search + Tag Dropdown -->
+  <div class="max-w-3xl mx-auto mb-8 flex flex-col md:flex-row md:space-x-reverse md:space-x-4 space-y-3 md:space-y-0">
+    <div class="relative flex-grow">
+      <input id="searchInput" type="text" placeholder="فتویٰ یا مضمون تلاش کریں..." class="w-full p-4 pr-12 rounded-full border border-black focus:outline-none focus:ring-2" />
+      <span class="absolute top-1/2 -translate-y-1/2 left-4 text-gray-500"><i class="bi bi-search"></i></span>
     </div>
+    <select id="tagDropdown" class="p-4 rounded-full border border-black bg-white focus:outline-none focus:ring-2 w-full md:w-56 text-right">
+      <option value="">تمام ٹیگز</option>
+    </select>
+  </div>
 
-    <div id="list" class="space-y-6"></div>
+  <div id="list" class="space-y-6"></div>
 
-    <div class="text-center mt-8">
-      <button id="loadMoreBtn" class="bg-midnight_green text-white py-3 px-6 rounded-full font-bold hover:bg-midnight_green-600 transition">مزید لوڈ کریں</button>
-    </div>
-  </main>
+  <div class="text-center mt-8">
+    <button id="loadMoreBtn" class="bg-midnight_green text-white py-3 px-6 rounded-full font-bold hover:bg-midnight_green-600 transition">مزید لوڈ کریں</button>
+  </div>
+</main>
 
   <div id="inlineLoader" class="hidden text-center my-6">
     <span class="text-xl font-bold text-midnight_green animate-pulse">لوڈ ہو رہا ہے...</span>
@@ -149,7 +153,7 @@
                 </a>
             </li>
             <li>
-                <a href="https://masailworld.com#ask" class=" flex flex-col items-center justify-center text-midnight_green hover:text-midnight_green-600 transition transform hover:scale-110 active:scale-100">
+                <a href="./Question.html" class=" flex flex-col items-center justify-center text-midnight_green hover:text-midnight_green-600 transition transform hover:scale-110 active:scale-100">
                     <i class="bi bi-chat-dots-fill text-xl"></i>
                     <span class="text-sm">سوال پوچھیں</span>
                 </a>
@@ -175,7 +179,7 @@
                     <ul class="space-y-3 text-lg">
                         <li><a href="https://masailworld.com/Pages/fatawa.html" class="text-air_force_blue-700 hover:text-beige transition">فتاویٰ</a></li>
                         <li><a href="https://masailworld.com/Pages/articles.html" class="text-air_force_blue-700 hover:text-beige transition">مضامین</a></li>
-                        <li><a href="https://masailworld.com#ask" class="nav-link text-air_force_blue-700 hover:text-beige transition">سوال پوچھیں</a></li>
+                        <li><a href="./Question.html" class="nav-link text-air_force_blue-700 hover:text-beige transition">سوال پوچھیں</a></li>
                         <li><a href="https://masailworld.com#about" class="nav-link text-air_force-blue-700 hover:text-beige transition">ہمارے بارے میں</a></li>
                     </ul>
                 </div>
@@ -203,7 +207,7 @@
         </div>
     </footer>
 
-    
+<!--     
 <script>
 /* ---------- Guards against accidental edit modes ---------- */
 try {
@@ -390,7 +394,185 @@ document.addEventListener('dblclick', function(e) {
     el = el.parentElement;
   }
 }, true);
+</script> -->
+
+
+<script>
+/* ---------- Guards against accidental edit modes ---------- */
+try { document.designMode = 'off'; } catch (e) {}
+document.body.setAttribute('contenteditable', 'false');
+document.querySelectorAll('input, textarea').forEach(el => el.spellcheck = false);
+
+/* ---------- DOM elements ---------- */
+const listEl = document.getElementById('list');
+const searchInput = document.getElementById('searchInput');
+const loader = document.getElementById('loader');
+const inlineLoader = document.getElementById('inlineLoader');
+const loadMoreBtn = document.getElementById('loadMoreBtn');
+const tagDropdown = document.getElementById('tagDropdown');
+
+/* ---------- Variables ---------- */
+let fatawaData = [];
+let offset = 0;
+const limit = 50;
+let isLoading = false;
+let allLoaded = false;
+let selectedTag = '';
+
+/* ---------- Sanitize HTML from Quill / unsafe input ---------- */
+function sanitizeHtml(unsafeHtml) {
+  if (!unsafeHtml) return '';
+  const tpl = document.createElement('template');
+  tpl.innerHTML = unsafeHtml;
+  tpl.content.querySelectorAll('script,style').forEach(n => n.remove());
+  tpl.content.querySelectorAll('[contenteditable]').forEach(n => n.removeAttribute('contenteditable'));
+  tpl.content.querySelectorAll('*').forEach(el => {
+    const attrs = Array.from(el.attributes || []);
+    attrs.forEach(attr => {
+      const name = attr.name.toLowerCase();
+      const val = String(attr.value || '').toLowerCase();
+      if (name.startsWith('on')) el.removeAttribute(attr.name);
+      else if (val.includes('javascript:')) el.removeAttribute(attr.name);
+    });
+  });
+  const wrapper = tpl.content.querySelector('.ql-editor');
+  return wrapper ? wrapper.innerHTML : tpl.innerHTML;
+}
+
+/* ---------- Safe text escape for titles ---------- */
+function escapeText(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+/* ---------- Fetch fatawa from API ---------- */
+async function fetchFatawa() {
+  if (isLoading || allLoaded) return;
+  isLoading = true;
+  if (offset === 0) loader.style.display = 'flex';
+  else { inlineLoader.classList.remove('hidden'); loadMoreBtn.disabled = true; }
+
+  try {
+    const res = await fetch(`https://api.masailworld.com/api/fatwa?limit=${limit}&offset=${offset}`);
+    const newData = await res.json();
+
+    if (!newData.length) {
+      allLoaded = true;
+      loadMoreBtn.style.display = 'none';
+    } else {
+      fatawaData = [...fatawaData, ...newData];
+      populateTags(); // ensure dropdown updates
+      applyFilters(); // apply any current filters
+      offset += limit;
+    }
+  } catch (err) {
+    console.error('Failed to fetch fatawa:', err);
+    if (offset === 0) listEl.innerHTML = '<p class="text-center text-red-600">فتاویٰ لوڈ کرنے میں مسئلہ پیش آیا۔</p>';
+  } finally {
+    loader.style.display = 'none';
+    inlineLoader.classList.add('hidden');
+    loadMoreBtn.disabled = false;
+    isLoading = false;
+  }
+}
+
+/* ---------- Populate unique tags ---------- */
+function populateTags() {
+  const tags = new Set();
+  fatawaData.forEach(f => {
+    if (f.tags) {
+      String(f.tags).split(',').forEach(t => tags.add(t.trim()));
+    }
+  });
+  tagDropdown.innerHTML = '<option value="">تمام ٹیگز</option>' +
+    Array.from(tags).map(t => `<option value="${t}">${t}</option>`).join('');
+}
+
+/* ---------- Apply filters (search + tag) ---------- */
+function applyFilters() {
+  const query = searchInput.value.trim().toLowerCase();
+  const filtered = fatawaData.filter(f => {
+    const matchesTag = !selectedTag || (f.tags && f.tags.includes(selectedTag));
+    const matchesSearch =
+      !query ||
+      (f.Title && f.Title.toLowerCase().includes(query)) ||
+      (f.detailquestion && f.detailquestion.toLowerCase().includes(query)) ||
+      (f.details && f.details.toLowerCase().includes(query));
+    return matchesTag && matchesSearch;
+  });
+  renderList(filtered);
+}
+
+/* ---------- Render fatawa list ---------- */
+function renderList(data) {
+  listEl.innerHTML = '';
+  if (!data.length) {
+    listEl.innerHTML = '<p class="text-center text-gray-600">کوئی فتاویٰ دستیاب نہیں۔</p>';
+    return;
+  }
+
+  data.forEach((f, i) => {
+    const idx = i + 1;
+    const a = document.createElement('a');
+    a.href = `fatwa-detail.html?id=${encodeURIComponent(f.id)}`;
+    a.className = 'block bg-white p-6 rounded-2xl shadow-lg border border-gray-200 transition-all duration-200 card-link';
+    a.setAttribute('contenteditable', 'false');
+
+    const title = `<h3 class="text-xl font-semibold mb-2" contenteditable="false">${escapeText(f.Title || f.question || 'بلا عنوان')}</h3>`;
+    const detail = sanitizeHtml(String(f.detailquestion || f.details || ''));
+
+    a.innerHTML = `
+      <div class="flex items-start">
+        <div class="flex-shrink-0 w-14 h-14 ${ (idx % 2) ? 'bg-midnight_green' : 'bg-air_force_blue' } text-white rounded-xl flex items-center justify-center font-bold text-2xl ml-4">${idx}</div>
+        <div class="flex-grow text-right">
+          ${title}
+          <div class="text-gray-700 line-clamp-2" contenteditable="false">${detail}</div>
+          <div class="mt-4 flex justify-between items-center">
+            <span class="text-green-700 font-bold">مکمل جواب پڑھیں ←</span>
+            <div class="flex items-center text-gray-500 space-x-3 space-x-reverse">
+              <span class="flex items-center"><i class="bi bi-eye-fill ml-1"></i> ${Number(f.Views || 0)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    listEl.appendChild(a);
+  });
+}
+
+/* ---------- Event listeners ---------- */
+tagDropdown.addEventListener('change', e => {
+  selectedTag = e.target.value;
+  applyFilters();
+});
+
+searchInput.addEventListener('input', applyFilters);
+loadMoreBtn.addEventListener('click', fetchFatawa);
+
+/* ---------- Initial load ---------- */
+fetchFatawa();
+
+/* ---------- UX guard: prevent caret editing ---------- */
+document.addEventListener('dblclick', function(e) {
+  let el = e.target;
+  while (el && el !== document.body) {
+    if (el.classList && el.classList.contains('card-link')) {
+      el.focus();
+      e.preventDefault();
+      return;
+    }
+    el = el.parentElement;
+  }
+}, true);
 </script>
+
+
 
 </body>
 </html>
