@@ -106,7 +106,7 @@
     </header>
 
 
- <main class="container mx-auto px-4 pt-24 pb-12 max-w-5xl">
+<main class="container mx-auto px-4 pt-24 pb-12 max-w-5xl">
   <a href="https://masailworld.com" class="text-midnight_green font-semibold">&larr; صفحہ اول</a>
   <h1 class="text-4xl font-bold text-center mb-8">تمام فتاویٰ</h1>
 
@@ -116,9 +116,20 @@
       <input id="searchInput" type="text" placeholder="فتویٰ یا مضمون تلاش کریں..." class="w-full p-4 pr-12 rounded-full border border-black focus:outline-none focus:ring-2" />
       <span class="absolute top-1/2 -translate-y-1/2 left-4 text-gray-500"><i class="bi bi-search"></i></span>
     </div>
-    <select id="tagDropdown" class="p-4 rounded-full border border-black bg-white focus:outline-none focus:ring-2 w-full md:w-56 text-right">
-      <option value="">تمام ٹیگز</option>
-    </select>
+
+    <!-- Tag search + dropdown (added search bar above the select) -->
+    <div class="w-full md:w-56">
+      <input
+        id="tagSearchInput"
+        type="text"
+        placeholder="ٹیگز تلاش کریں…"
+        class="w-full mb-2 p-3 rounded-full border border-black bg-white focus:outline-none focus:ring-2 text-right"
+        autocomplete="off"
+      />
+      <select id="tagDropdown" class="p-4 rounded-full border border-black bg-white focus:outline-none focus:ring-2 w-full text-right">
+        <option value="">تمام ٹیگز</option>
+      </select>
+    </div>
   </div>
 
   <div id="list" class="space-y-6"></div>
@@ -127,6 +138,7 @@
     <button id="loadMoreBtn" class="bg-midnight_green text-white py-3 px-6 rounded-full font-bold hover:bg-midnight_green-600 transition">مزید لوڈ کریں</button>
   </div>
 </main>
+
 
   <div id="inlineLoader" class="hidden text-center my-6">
     <span class="text-xl font-bold text-midnight_green animate-pulse">لوڈ ہو رہا ہے...</span>
@@ -207,197 +219,8 @@
         </div>
     </footer>
 
-<!--     
-<script>
-/* ---------- Guards against accidental edit modes ---------- */
-try {
-  document.designMode = 'off';
-} catch (e) { /* ignore */ }
-document.body.setAttribute('contenteditable','false');
-document.querySelectorAll('input, textarea').forEach(el => el.spellcheck = false);
 
-/* ---------- Fetch / Render logic ---------- */
-const listEl = document.getElementById('list');
-const searchInput = document.getElementById('searchInput');
-const loader = document.getElementById('loader');
-const inlineLoader = document.getElementById('inlineLoader');
-const loadMoreBtn = document.getElementById('loadMoreBtn');
-
-let fatawaData = [];
-let offset = 0;
-const limit = 50;
-let isLoading = false;
-let allLoaded = false;
-
-async function fetchFatawa() {
-  if (isLoading || allLoaded) return;
-  isLoading = true;
-  if (offset === 0) { loader.style.display = 'flex'; } else { inlineLoader.classList.remove('hidden'); loadMoreBtn.disabled = true; }
-  try {
-    const res = await fetch(`https://api.masailworld.com/api/fatwa?limit=${limit}&offset=${offset}`);
-    const newData = await res.json();
-    if (!newData.length) {
-      allLoaded = true;
-      loadMoreBtn.style.display = 'none';
-    } else {
-      fatawaData = [...fatawaData, ...newData];
-      renderList(newData, true);
-      offset += limit;
-    }
-  } catch (err) {
-    console.error('Failed to fetch fatawa:', err);
-    if (offset === 0) listEl.innerHTML = '<p class="text-center text-red-600">فتاویٰ لوڈ کرنے میں مسئلہ پیش آیا۔</p>';
-  } finally {
-    loader.style.display = 'none';
-    inlineLoader.classList.add('hidden');
-    loadMoreBtn.disabled = false;
-    isLoading = false;
-  }
-}
-
-/* ---------- Sanitize HTML from WYSIWYG (Quill) ---------- */
-/* This function:
-   - removes <script> and <style>
-   - strips `contenteditable` attributes
-   - removes inline event handlers (on*)
-   - removes javascript: URI usage
-   - unwraps .ql-editor wrapper so formatted content displays without showing the wrapper tag
-*/
-function sanitizeHtml(unsafeHtml) {
-  if (!unsafeHtml) return '';
-  // Create a template to parse
-  const tpl = document.createElement('template');
-  tpl.innerHTML = unsafeHtml;
-
-  // Remove scripts and styles
-  tpl.content.querySelectorAll('script,style').forEach(n => n.remove());
-
-  // Remove contenteditable attributes
-  tpl.content.querySelectorAll('[contenteditable]').forEach(n => n.removeAttribute('contenteditable'));
-
-  // Remove event handler attributes and javascript: URIs
-  tpl.content.querySelectorAll('*').forEach(el => {
-    // copy attribute names first to avoid live-list mutation issues
-    const attrs = Array.from(el.attributes || []);
-    attrs.forEach(attr => {
-      const name = attr.name.toLowerCase();
-      const val = String(attr.value || '').toLowerCase();
-      if (name.startsWith('on')) {
-        el.removeAttribute(attr.name);
-      } else if (val.includes('javascript:')) {
-        el.removeAttribute(attr.name);
-      }
-      // strip potentially dangerous attributes if you want stricter control:
-      // if (['style','formaction','xlink:href'].includes(name)) { el.removeAttribute(attr.name); }
-    });
-  });
-
-  // If content has a .ql-editor wrapper, unwrap it (return innerHTML)
-  const wrapper = tpl.content.querySelector('.ql-editor');
-  if (wrapper) return wrapper.innerHTML;
-
-  // otherwise return cleaned HTML
-  return tpl.innerHTML;
-}
-
-/* ---------- Utility: safe text escape for titles ---------- */
-function escapeText(s) {
-  if (s === null || s === undefined) return '';
-  return String(s)
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'","&#039;");
-}
-
-/* ---------- Render items ---------- */
-function renderList(data, append = false) {
-  if (!append) listEl.innerHTML = '';
-  if (!data.length && !append) {
-    listEl.innerHTML = '<p class="text-center text-gray-600">کوئی فتاویٰ دستیاب نہیں۔</p>';
-    return;
-  }
-
-  data.forEach((f, i) => {
-    const idx = offset + i + 1;
-    const a = document.createElement('a');
-    a.href = `fatwa-detail.html?id=${encodeURIComponent(f.id)}`;
-    a.className = 'block bg-white p-6 rounded-2xl shadow-lg border border-gray-200 transition-all duration-200 card-link';
-    a.setAttribute('contenteditable','false');
-    a.setAttribute('tabindex','0');
-
-    // Title: render as plain text (escaped)
-    const titleHtml = `<h3 class="text-xl font-semibold mb-2 card-title" contenteditable="false" tabindex="-1">${escapeText(f.Title || f.question || 'بلا عنوان')}</h3>`;
-
-    // Detail/question: sanitize and render HTML (so <p>, <strong>, etc. display properly)
-    const rawDetail = f.detailquestion || f.details || '';
-    const sanitized = sanitizeHtml(String(rawDetail));
-
-    // Build markup. For description we set contenteditable="false" on container to keep caret out.
-    a.innerHTML = `
-      <div class="flex items-start">
-        <div class="flex-shrink-0 w-14 h-14 ${ (idx % 2) ? 'bg-midnight_green' : 'bg-air_force_blue' } text-white rounded-xl flex items-center justify-center font-bold text-2xl ml-4" aria-hidden="true">${idx}</div>
-        <div class="flex-grow text-right">
-          ${titleHtml}
-          <div class="text-gray-700 line-clamp-2 card-text" contenteditable="false" tabindex="-1">${sanitized}</div>
-          <div class="mt-4 flex justify-between items-center">
-            <span class="text-mid text-green-700 font-bold">مکمل جواب پڑھیں ←</span>
-            <div class="flex items-center text-gray-500 space-x-3 space-x-reverse">
-              <span class="flex items-center"><i class="bi bi-eye-fill ml-1"></i> ${Number(f.Views || 0)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    // Final safety: ensure no child kept contenteditable true
-    a.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','false'));
-
-    listEl.appendChild(a);
-  });
-}
-
-/* ---------- Search ---------- */
-searchInput.addEventListener('input', (e) => {
-  const q = e.target.value.trim();
-  if (!q) {
-    listEl.innerHTML = '';
-    renderList(fatawaData, true);
-    return;
-  }
-  const qLower = q.toLowerCase();
-  const filtered = fatawaData.filter(f =>
-    (f.Title && String(f.Title).toLowerCase().includes(qLower)) ||
-    (f.detailquestion && String(f.detailquestion).toLowerCase().includes(qLower)) ||
-    (f.details && String(f.details).toLowerCase().includes(qLower))
-  );
-  listEl.innerHTML = '';
-  renderList(filtered, true);
-});
-
-/* ---------- Load more ---------- */
-loadMoreBtn.addEventListener('click', fetchFatawa);
-
-/* ---------- Initial load ---------- */
-fetchFatawa();
-
-/* ---------- UX guard: prevent double-click editing caret ---------- */
-document.addEventListener('dblclick', function(e) {
-  let el = e.target;
-  while (el && el !== document.body) {
-    if (el.classList && el.classList.contains('card-link')) {
-      el.focus();
-      e.preventDefault();
-      return;
-    }
-    el = el.parentElement;
-  }
-}, true);
-</script> -->
-
-
-<script>
+<!-- <script>
 /* ---------- Guards against accidental edit modes ---------- */
 try { document.designMode = 'off'; } catch (e) {}
 document.body.setAttribute('contenteditable', 'false');
@@ -570,8 +393,349 @@ document.addEventListener('dblclick', function(e) {
     el = el.parentElement;
   }
 }, true);
-</script>
+</script> -->
 
+<script>
+/* ---------- Guards against accidental edit modes ---------- */
+try { document.designMode = 'off'; } catch (e) {}
+document.body.setAttribute('contenteditable', 'false');
+document.querySelectorAll('input, textarea').forEach(el => el.spellcheck = false);
+
+/* ---------- DOM elements ---------- */
+const listEl = document.getElementById('list');
+const searchInput = document.getElementById('searchInput');
+const loader = document.getElementById('loader');
+const inlineLoader = document.getElementById('inlineLoader');
+const loadMoreBtn = document.getElementById('loadMoreBtn');
+const tagDropdown = document.getElementById('tagDropdown');
+const tagSearchInput = document.getElementById('tagSearchInput'); // <-- added
+
+/* ---------- Variables ---------- */
+let fatawaData = [];
+let offset = 0;
+const limit = 50;
+let isLoading = false;
+let allLoaded = false;
+let selectedTag = '';
+
+/* Catalog of tags fetched from /api/tags */
+let tagsCatalog = [];    // [{id, name, slug}]
+let allTagOptions = [];  // [{value, label}] built once, used for filtering
+const urCollator = new Intl.Collator('ur', { sensitivity: 'base' });
+
+/* ---------- Sanitize HTML from Quill / unsafe input ---------- */
+function sanitizeHtml(unsafeHtml) {
+  if (!unsafeHtml) return '';
+  const tpl = document.createElement('template');
+  tpl.innerHTML = unsafeHtml;
+  tpl.content.querySelectorAll('script,style').forEach(n => n.remove());
+  tpl.content.querySelectorAll('[contenteditable]').forEach(n => n.removeAttribute('contenteditable'));
+  tpl.content.querySelectorAll('*').forEach(el => {
+    const attrs = Array.from(el.attributes || []);
+    attrs.forEach(attr => {
+      const name = attr.name.toLowerCase();
+      const val = String(attr.value || '').toLowerCase();
+      if (name.startsWith('on')) el.removeAttribute(attr.name);
+      else if (val.includes('javascript:')) el.removeAttribute(attr.name);
+    });
+  });
+  const wrapper = tpl.content.querySelector('.ql-editor');
+  return wrapper ? wrapper.innerHTML : tpl.innerHTML;
+}
+
+/* ---------- Safe text escape for titles ---------- */
+function escapeText(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+/* ---------- Normalize tag field from fatawa ---------- */
+/* Accepts: array, "a,b", '["a","b"]', "[]", null */
+function toTagArray(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw.map(String).map(s => s.trim()).filter(Boolean);
+
+  const s = String(raw).trim();
+  if (!s) return [];
+
+  // JSON array string?
+  if ((s.startsWith('[') && s.endsWith(']')) || (s.startsWith('"[') && s.endsWith(']"'))) {
+    try {
+      const parsed = JSON.parse(s);
+      if (Array.isArray(parsed)) return parsed.map(String).map(v => v.trim()).filter(Boolean);
+    } catch (_) {
+      // fall through to manual split
+      const inner = s.replace(/^"+|"+$/g, '').replace(/^\[|\]$/g, '');
+      return inner.split(',').map(t => t.replace(/^"+|"+$/g,'').trim()).filter(Boolean);
+    }
+  }
+
+  // Plain comma-separated
+  return s.split(',').map(t => t.trim()).filter(Boolean);
+}
+
+/* ---------- Fetch all tags for dropdown ---------- */
+async function loadTags() {
+  try {
+    const res = await fetch('https://api.masailworld.com/api/tags?limit=148');
+    const payload = await res.json();
+    // unwrap: { data: [...] } or [...]
+    const arr = Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : [];
+    tagsCatalog = arr
+      .map(t => ({
+        id: t.id ?? t.ID ?? t.Id,
+        name: (t.Name ?? t.name ?? '').trim(),
+        slug: (t.slug ?? '').trim()
+      }))
+      .filter(t => t.name || t.slug)
+      .sort((a, b) => urCollator.compare(a.name, b.name));
+
+    // Build master list of options once (value = slug || name, label = name)
+    allTagOptions = tagsCatalog.map(t => ({ value: t.slug || t.name, label: t.name }));
+    populateTags(); // render dropdown with full list (sorted)
+  } catch (e) {
+    console.error('Failed to load tags catalog:', e);
+    // fallback: keep whatever populateTags builds from fatawa (if any)
+    populateTags();
+  }
+}
+
+/* ---------- Fetch fatawa from API ---------- */
+async function fetchFatawa() {
+  if (isLoading || allLoaded) return;
+  isLoading = true;
+  if (offset === 0 && loader) loader.style.display = 'flex';
+  else { inlineLoader?.classList.remove('hidden'); loadMoreBtn.disabled = true; }
+
+  try {
+    const res = await fetch(`https://api.masailworld.com/api/fatwa?limit=${limit}&offset=${offset}`);
+    const newData = await res.json();
+
+    // Unwrap common shapes just in case
+    const items = Array.isArray(newData) ? newData : (Array.isArray(newData?.data) ? newData.data : []);
+    if (!items.length) {
+      allLoaded = true;
+      loadMoreBtn.style.display = 'none';
+    } else {
+      fatawaData = [...fatawaData, ...items];
+      // If we have no catalog (fallback mode), rebuild master tag options from fatawa
+      if (!allTagOptions.length && !tagsCatalog.length) {
+        const set = new Set();
+        fatawaData.forEach(f => toTagArray(f.tags).forEach(t => t && set.add(t)));
+        allTagOptions = Array.from(set)
+          .sort((a, b) => urCollator.compare(a, b))
+          .map(x => ({ value: x, label: x }));
+      }
+      populateTags();   // ensure dropdown exists
+      applyFilters();   // apply any current filters
+      offset += limit;
+    }
+  } catch (err) {
+    console.error('Failed to fetch fatawa:', err);
+    if (offset === 0) listEl.innerHTML = '<p class="text-center text-red-600">فتاویٰ لوڈ کرنے میں مسئلہ پیش آیا۔</p>';
+  } finally {
+    if (loader) loader.style.display = 'none';
+    inlineLoader?.classList.add('hidden');
+    loadMoreBtn.disabled = false;
+    isLoading = false;
+  }
+}
+
+/* ---------- Populate tags dropdown ---------- */
+/* Use catalog if available; otherwise fall back to tags extracted from fatawaData */
+function populateTags() {
+  // Prefer the prebuilt master list if present
+  if (allTagOptions.length) {
+    renderTagOptions(allTagOptions);
+    return;
+  }
+
+  // Fallback: build from fatawaData (older behavior)
+  const tags = new Set();
+  fatawaData.forEach(f => {
+    toTagArray(f.tags).forEach(t => t && tags.add(t));
+  });
+  const sorted = Array.from(tags).sort((a, b) => urCollator.compare(a, b));
+  const options = sorted.map(x => ({ value: x, label: x }));
+  allTagOptions = options;
+  renderTagOptions(allTagOptions);
+}
+
+/* ---------- Render tag options into the select (with optional filtering) ---------- */
+function renderTagOptions(options) {
+  tagDropdown.innerHTML = '<option value="">تمام ٹیگز</option>';
+  options.forEach(opt => {
+    const o = document.createElement('option');
+    o.value = opt.value;
+    o.textContent = opt.label;
+    tagDropdown.appendChild(o);
+  });
+
+  // Keep the current selection visible if still in list
+  if (selectedTag) {
+    const match = options.find(o => o.value === selectedTag);
+    if (!match) {
+      tagDropdown.value = '';
+      selectedTag = '';
+    } else {
+      tagDropdown.value = selectedTag;
+    }
+  }
+}
+
+/* ---------- Filter + sort tag list based on search input ---------- */
+function filterAndRenderTagOptions(queryRaw) {
+  const q = (queryRaw || '').trim().toLowerCase();
+  if (!allTagOptions.length) return;
+
+  let filtered = allTagOptions;
+
+  if (q) {
+    // Filter by label/value containing query
+    filtered = allTagOptions.filter(o =>
+      o.label.toLowerCase().includes(q) || o.value.toLowerCase().includes(q)
+    );
+
+    // Sort: startsWith first, then Urdu-aware alphabetical
+    filtered.sort((a, b) => {
+      const aLabel = a.label.toLowerCase(), bLabel = b.label.toLowerCase();
+      const aStarts = aLabel.startsWith(q) ? 0 : 1;
+      const bStarts = bLabel.startsWith(q) ? 0 : 1;
+      if (aStarts !== bStarts) return aStarts - bStarts;
+      return urCollator.compare(a.label, b.label);
+    });
+  } else {
+    // No query: base Urdu-aware sort by label
+    filtered = allTagOptions.slice().sort((a, b) => urCollator.compare(a.label, b.label));
+  }
+
+  renderTagOptions(filtered);
+}
+
+/* ---------- Check if a fatwa matches the selected tag ---------- */
+function fatwaHasSelectedTag(fatwa, selected) {
+  if (!selected) return true;
+  const list = toTagArray(fatwa.tags).map(s => s.toLowerCase());
+
+  // Match against selected value (we set dropdown value = slug || name)
+  const sel = selected.toLowerCase();
+
+  // Also try to resolve by tag name/slug from catalog in case fatawa uses names
+  const catalogMatch = tagsCatalog.find(t =>
+    (t.slug && t.slug.toLowerCase() === sel) || (t.name && t.name.toLowerCase() === sel)
+  );
+  const acceptable = new Set([
+    sel,
+    ...(catalogMatch ? [catalogMatch.name?.toLowerCase(), catalogMatch.slug?.toLowerCase()].filter(Boolean) : [])
+  ]);
+
+  // direct equals match against any of the acceptable strings OR substring fallback
+  return list.some(tagVal =>
+    acceptable.has(tagVal) || tagVal.includes(sel)
+  );
+}
+
+/* ---------- Apply filters (search + tag) ---------- */
+function applyFilters() {
+  const query = searchInput.value.trim().toLowerCase();
+
+  const filtered = fatawaData.filter(f => {
+    const matchesTag = fatwaHasSelectedTag(f, selectedTag);
+    const matchesSearch =
+      !query ||
+      (f.Title && String(f.Title).toLowerCase().includes(query)) ||
+      (f.detailquestion && String(f.detailquestion).toLowerCase().includes(query)) ||
+      (f.details && String(f.details).toLowerCase().includes(query));
+    return matchesTag && matchesSearch;
+  });
+
+  // Sort results for stable, readable order (by Title in Urdu)
+  const sorted = filtered.slice().sort((a, b) =>
+    urCollator.compare(String(a.Title || a.question || ''), String(b.Title || b.question || ''))
+  );
+
+  renderList(sorted);
+}
+
+/* ---------- Render fatawa list ---------- */
+function renderList(data) {
+  listEl.innerHTML = '';
+  if (!data.length) {
+    listEl.innerHTML = '<p class="text-center text-gray-600">کوئی فتاویٰ دستیاب نہیں۔</p>';
+    return;
+  }
+
+  data.forEach((f, i) => {
+    const idx = i + 1;
+    const a = document.createElement('a');
+    a.href = `fatwa-detail.html?id=${encodeURIComponent(f.id)}`;
+    a.className = 'block bg-white p-6 rounded-2xl shadow-lg border border-gray-200 transition-all duration-200 card-link';
+    a.setAttribute('contenteditable', 'false');
+
+    const title = `<h3 class="text-xl font-semibold mb-2" contenteditable="false">${escapeText(f.Title || f.question || 'بلا عنوان')}</h3>`;
+    const detail = sanitizeHtml(String(f.detailquestion || f.details || ''));
+
+    a.innerHTML = `
+      <div class="flex items-start">
+        <div class="flex-shrink-0 w-14 h-14 ${(idx % 2) ? 'bg-midnight_green' : 'bg-air_force_blue'} text-white rounded-xl flex items-center justify-center font-bold text-2xl ml-4">${idx}</div>
+        <div class="flex-grow text-right">
+          ${title}
+          <div class="text-gray-700 line-clamp-2" contenteditable="false">${detail}</div>
+          <div class="mt-4 flex justify-between items-center">
+            <span class="text-green-700 font-bold">مکمل جواب پڑھیں ←</span>
+            <div class="flex items-center text-gray-500 space-x-3 space-x-reverse">
+              <span class="flex items-center"><i class="bi bi-eye-fill ml-1"></i> ${Number(f.Views || 0)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    listEl.appendChild(a);
+  });
+}
+
+/* ---------- Event listeners ---------- */
+tagDropdown.addEventListener('change', e => {
+  selectedTag = e.target.value;
+  applyFilters();
+});
+
+// NEW: live filter the tag options
+tagSearchInput.addEventListener('input', (e) => {
+  filterAndRenderTagOptions(e.target.value);
+});
+
+// When user focuses the search field, show the full (sorted) list
+tagSearchInput.addEventListener('focus', () => {
+  filterAndRenderTagOptions(tagSearchInput.value);
+});
+
+searchInput.addEventListener('input', applyFilters);
+loadMoreBtn.addEventListener('click', fetchFatawa);
+
+/* ---------- Initial load ---------- */
+loadTags();   // load all tags, build searchable dropdown
+fetchFatawa();
+
+/* ---------- UX guard: prevent caret editing ---------- */
+document.addEventListener('dblclick', function(e) {
+  let el = e.target;
+  while (el && el !== document.body) {
+    if (el.classList && el.classList.contains('card-link')) {
+      el.focus();
+      e.preventDefault();
+      return;
+    }
+    el = el.parentElement;
+  }
+}, true);
+</script>
 
 
 </body>
