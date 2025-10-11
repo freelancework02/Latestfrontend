@@ -257,7 +257,12 @@
         if (container) {
           container.innerHTML = `<p class="text-center text-air_force_blue">مضامین لوڈ کرنے میں مسئلہ آیا۔</p>`;
         }
+        
       }
+      finally {
+      // ✅ Always hide the loader (success or error)
+      if (loader) loader.style.display = "none";
+    }
     }
 
     document.addEventListener("DOMContentLoaded", loadAllArticles);

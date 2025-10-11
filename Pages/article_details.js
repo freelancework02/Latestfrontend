@@ -1,3 +1,9 @@
+"use strict";
+
+/* ----------------------------
+   SMOOTH SCROLL (optional)
+-----------------------------*/
+
 // ✅ Smooth scroll for same-page anchors (optional)
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', function () {
@@ -6,7 +12,10 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-// ✅ Utility to read querystring parameter
+/* ----------------------------
+   URL / DOM HOOKS
+-----------------------------*/
+
 function getQueryParam(param) {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(param);
@@ -16,7 +25,10 @@ const articleId = getQueryParam("id"); // ?id=123
 const articleContainer = document.querySelector("article");
 const relatedContainer = document.querySelector(".grid");
 
-// ✅ Loader utilities
+/* ----------------------------
+   LOADER HELPERS
+-----------------------------*/
+
 function showLoader() {
   const loader = document.getElementById("loader");
   if (loader) loader.style.display = "flex";
@@ -26,16 +38,31 @@ function hideLoader() {
   if (loader) loader.style.display = "none";
 }
 
+/* ----------------------------
+   TEXT / CONTENT HELPERS
+-----------------------------*/
+
 // ✅ Helper: check if ArticleText is empty
 function sanitizeArticleText(text) {
-  if (!text || text.trim() === "" || text.trim() === "<p><br></p>") {
+  if (!text) return `<p class="text-gray-500 italic">مضمون کا متن دستیاب نہیں ہے۔</p>`;
+  const t = String(text).trim();
+  if (t === "" || t === "<p><br></p>") {
     return `<p class="text-gray-500 italic">مضمون کا متن دستیاب نہیں ہے۔</p>`;
   }
-  return text;
+  return t;
+}
+
+// ✅ Normalize API responses that wrap data
+function unwrap(json) {
+  if (json && typeof json === "object") {
+    if ("data" in json) return json.data;
+    if ("result" in json) return json.result;
+  }
+  return json;
 }
 
 /* ----------------------------
-   SHARE HELPERS (new)
+   SHARE HELPERS
 -----------------------------*/
 
 // Centered popup
@@ -54,7 +81,7 @@ function popupCenter(url, title) {
 // Build share URLs for current URL/title
 function buildShareLinks(url, text) {
   const u = encodeURIComponent(url);
-  const t = encodeURIComponent(text || document.title || 'مسائل ورلڈ');
+  const t = encodeURIComponent(text || document.title || "مسائل ورلڈ");
   return {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${u}`,
     x: `https://twitter.com/intent/tweet?url=${u}&text=${t}`,
@@ -79,32 +106,30 @@ async function copyCurrentUrl() {
 // This is called by the share icon in the article header
 async function openShare() {
   const url = window.location.href;
-  const title = document.title || 'مسائل ورلڈ';
-  const text = 'اس صفحہ کا لنک ملاحظہ کریں:';
+  const title = document.title || "مسائل ورلڈ";
+  const text = "اس صفحہ کا لنک ملاحظہ کریں:";
 
-  // Native share sheet if supported
   if (navigator.share) {
     try {
       await navigator.share({ title, text, url });
       return;
     } catch (e) {
-      if (e && e.name === 'AbortError') return; // user canceled
+      if (e && e.name === "AbortError") return; // user canceled
       // else fall through to fallback
     }
   }
 
-  // Fallback: quick chooser via prompt (no UI/layout changes)
   const links = buildShareLinks(url, title);
-  const choice = prompt('شیئر کریں: facebook, x, whatsapp, telegram, linkedin, copy', 'facebook');
+  const choice = prompt("شیئر کریں: facebook, x, whatsapp, telegram, linkedin, copy", "facebook");
   if (!choice) return;
 
   const key = choice.toLowerCase().trim();
-  if (key === 'copy') return copyCurrentUrl();
+  if (key === "copy") return copyCurrentUrl();
 
   if (links[key]) {
-    popupCenter(links[key], 'Share');
+    popupCenter(links[key], "Share");
   } else {
-    alert('ناموزوں انتخاب۔ درج ذیل میں سے ایک لکھیں: facebook, x, whatsapp, telegram, linkedin, copy');
+    alert("ناموزوں انتخاب۔ درج ذیل میں سے ایک لکھیں: facebook, x, whatsapp, telegram, linkedin, copy");
   }
 }
 
@@ -114,21 +139,21 @@ function wireSocialShareAnchors() {
   const links = buildShareLinks(url, document.title);
 
   const map = {
-    'sm-fb-mobile': links.facebook,
-    'sm-x-mobile': links.x,
-    'sm-fb-desktop': links.facebook,
-    'sm-x-desktop': links.x,
-    'sm-fb-footer': links.facebook,
-    'sm-x-footer': links.x
+    "sm-fb-mobile": links.facebook,
+    "sm-x-mobile": links.x,
+    "sm-fb-desktop": links.facebook,
+    "sm-x-desktop": links.x,
+    "sm-fb-footer": links.facebook,
+    "sm-x-footer": links.x
   };
 
   Object.keys(map).forEach(id => {
     const a = document.getElementById(id);
     if (!a) return;
-    a.setAttribute('href', map[id]);
-    a.addEventListener('click', function (e) {
+    a.setAttribute("href", map[id]);
+    a.addEventListener("click", function (e) {
       e.preventDefault();
-      popupCenter(map[id], 'Share');
+      popupCenter(map[id], "Share");
     });
   });
 }
@@ -139,38 +164,51 @@ function wireSocialShareAnchors() {
 
 // ✅ Fetch single article detail
 async function fetchArticleDetail(id) {
+  if (!articleContainer) return;
+
   showLoader();
   try {
     const res = await fetch(`https://api.masailworld.com/api/article/${id}`);
     if (!res.ok) throw new Error("Failed to fetch article");
-    const article = await res.json();
+    const payload = await res.json();
+    const article = unwrap(payload);
 
-    const safeText = sanitizeArticleText(article.seo);
+    if (!article || typeof article !== "object") {
+      throw new Error("Bad article payload");
+    }
+
+    // Prefer ArticleText for the main content (NOT seo)
+    const safeText = sanitizeArticleText(article.ArticleText || article.seo);
+
+    // Optional: update document title
+    if (article.Title) {
+      document.title = `${article.Title} | مسائل ورلڈ`;
+    }
+
+    const createdAtStr = article.createdAt
+      ? new Date(article.createdAt).toLocaleDateString("ur-PK", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : "نامعلوم";
 
     articleContainer.innerHTML = `
-      <h1 class="text-3xl md:text-5xl font-bold mb-4 text-rich-black leading-tight">${article.Title}</h1>
+      <h1 class="text-3xl md:text-5xl font-bold mb-4 text-rich-black leading-tight">${article.Title || "بدون عنوان"}</h1>
 
       <div class="flex flex-wrap justify-between items-center border-b border-[rgba(174,195,176,0.35)] pb-4 mb-8">
         <div class="flex items-center text-air_force_blue mb-4 md:mb-0">
           <span class="ml-2">تحریر: ${article.writer || "نامعلوم"}</span>
           <span class="mx-2">|</span>
-          <span>تاریخ اشاعت: ${
-            article.createdAt
-              ? new Date(article.createdAt).toLocaleDateString("ur-PK", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })
-              : "نامعلوم"
-          }</span>
+          <span>تاریخ اشاعت: ${createdAtStr}</span>
         </div>
 
         <div class="flex items-center space-x-6 space-x-reverse text-air_force_blue text-lg">
           <div class="flex items-center">
-            <i class="bi bi-eye-fill ml-2"></i><span class="font-sans">${article.Views || 0}</span>
+            <i class="bi bi-eye-fill ml-2"></i><span class="font-sans">${article.Views ?? 0}</span>
           </div>
           <div class="flex items-center">
-            <i class="bi bi-hand-thumbs-up-fill ml-2"></i><span class="font-sans">${article.Likes || 0}</span>
+            <i class="bi bi-hand-thumbs-up-fill ml-2"></i><span class="font-sans">${article.Likes ?? 0}</span>
           </div>
           <button type="button" onclick="openShare()" class="flex items-center hover:text-midnight_green transition-colors" aria-label="اس صفحہ کو شیئر کریں">
             <i class="bi bi-share-fill"></i>
@@ -179,8 +217,9 @@ async function fetchArticleDetail(id) {
       </div>
 
       <img src="https://api.masailworld.com/api/article/${article.id}/image" 
-           alt="${article.Title}" 
-           class="w-full h-auto object-cover rounded-xl shadow-md mb-8">
+           alt="${article.Title || "تصویر"}" 
+           class="w-full h-auto object-cover rounded-xl shadow-md mb-8"
+           onerror="this.style.display='none'">
 
       <div class="text-rich_black-600 text-base md:text-xl space-y-6 leading-relaxed">
         ${safeText}
@@ -194,27 +233,46 @@ async function fetchArticleDetail(id) {
   }
 }
 
-// ✅ Fetch related articles
+// ✅ Fetch related articles (robust against wrapped/non-array payloads)
 async function fetchRelatedArticles(currentId) {
+  if (!relatedContainer) return;
+
   showLoader();
   try {
-    const res = await fetch(`https://api.masailworld.com/api/article?limit=3&excludeId=${currentId}`);
+    const res = await fetch(`https://api.masailworld.com/api/article?limit=3&excludeId=${encodeURIComponent(currentId)}`);
     if (!res.ok) throw new Error("Failed to fetch related articles");
-    const related = await res.json();
+    const payload = await res.json();
+    const unwrapped = unwrap(payload);
 
-    relatedContainer.innerHTML = related
-      .map(
-        (a) => `
-        <div onclick="window.location.href='article-detail.html?id=${a.id}'" 
-             class="cursor-pointer bg-white rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 border border-[rgba(174,195,176,0.35)]">
-          <img src="https://api.masailworld.com/api/article/${a.id}/image" alt="${a.Title}" class="w-full h-56 object-cover">
-          <div class="p-6">
-            <h3 class="text-xl md:text-2xl font-bold mb-3 text-rich_black">${a.Title}</h3>
-            <p class="text-midnight_green-600 font-bold text-lg">مکمل مضمون پڑھیں &larr;</p>
+    // Support several shapes: array, {rows: []}, single object -> []
+    const list = Array.isArray(unwrapped)
+      ? unwrapped
+      : Array.isArray(unwrapped?.rows)
+        ? unwrapped.rows
+        : Array.isArray(unwrapped?.data)
+          ? unwrapped.data
+          : [];
+
+    if (!Array.isArray(list) || list.length === 0) {
+      relatedContainer.innerHTML = `<p class="text-gray-600 text-center">مزید مضامین دستیاب نہیں۔</p>`;
+      return;
+    }
+
+    relatedContainer.innerHTML = list
+      .map((a) => {
+        const id = a.id ?? a.ID ?? a.articleId;
+        const title = a.Title || a.title || "بدون عنوان";
+        return `
+          <div onclick="window.location.href='article-detail.html?id=${id}'" 
+               class="cursor-pointer bg-white rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 border border-[rgba(174,195,176,0.35)]">
+            <img src="https://api.masailworld.com/api/article/${id}/image" alt="${title}" class="w-full h-56 object-cover" onerror="this.style.display='none'">
+            <div class="p-6">
+              <h3 class="text-xl md:text-2xl font-bold mb-3 text-rich_black">${title}</h3>
+              <p class="text-midnight_green-600 font-bold text-lg">مکمل مضمون پڑھیں &larr;</p>
+            </div>
           </div>
-        </div>
-      `
-      )
+        `;
+      })
       .join("");
   } catch (err) {
     console.error(err);
@@ -227,13 +285,20 @@ async function fetchRelatedArticles(currentId) {
 /* ----------------------------
    INIT
 -----------------------------*/
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   wireSocialShareAnchors(); // ensure top/footer icons share current URL in popup
-});
 
-if (articleId) {
-  fetchArticleDetail(articleId);
-  fetchRelatedArticles(articleId);
-} else {
-  articleContainer.innerHTML = `<p class="text-red-600 text-center">مضمون نہیں ملا۔</p>`;
-}
+  if (!articleContainer) {
+    console.warn("No <article> container found in DOM.");
+  }
+  if (!relatedContainer) {
+    console.warn("No .grid container found in DOM for related articles.");
+  }
+
+  if (articleId) {
+    fetchArticleDetail(articleId);
+    fetchRelatedArticles(articleId);
+  } else if (articleContainer) {
+    articleContainer.innerHTML = `<p class="text-red-600 text-center">مضمون نہیں ملا۔</p>`;
+  }
+});
